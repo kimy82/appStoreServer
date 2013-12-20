@@ -23,7 +23,8 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 		<property name="annotatedClasses">
 			<list>
 				<value>com.alexmany.appStore.model.Users</value>
-				<value>com.alexmany.appStore.model.UserRole</value>				
+				<value>com.alexmany.appStore.model.UserRole</value>
+				<value>com.alexmany.appStore.model.Anuncis</value>					
 			</list>
     	</property>
 

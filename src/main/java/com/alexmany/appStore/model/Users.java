@@ -1,16 +1,20 @@
 package com.alexmany.appStore.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import com.google.gson.annotations.Expose;
 
@@ -31,6 +35,8 @@ public class Users implements Serializable {
 	private String password;
 
 	protected UserRole userRole;
+	
+	private List<Anuncis>	anuncis;
 
 
 	// CONSTRUCTORS
@@ -92,6 +98,16 @@ public class Users implements Serializable {
 		this.userRole = userRole;
 	}
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+	@Cascade({CascadeType.ALL})
+	public List<Anuncis> getAnuncis() {
+		return anuncis;
+	}
+
+	public void setAnuncis(List<Anuncis> anuncis) {
+		this.anuncis = anuncis;
+	}
+	
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -112,5 +128,5 @@ public class Users implements Serializable {
 		}
 		
 		return isequal;
-	}
+	}	
 }

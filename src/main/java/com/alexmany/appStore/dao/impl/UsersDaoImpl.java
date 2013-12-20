@@ -58,6 +58,7 @@ public class UsersDaoImpl extends HibernateDaoSupport implements UsersDao{
 	
 	
 	public Users load( Long id ){
+		@SuppressWarnings("unchecked")
 		List<Users> userFounds = (List<Users>) getHibernateTemplate().find("from Users u where u.id = ?",id);
 		if (userFounds.isEmpty())
 			return null;

@@ -20,26 +20,34 @@
 
 package com.alexmany.appStore.restfull;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
+import javax.imageio.ImageIO;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.wink.common.annotations.Workspace;
+import org.apache.wink.common.internal.utils.MediaTypeUtils;
+import org.apache.wink.common.model.multipart.InMultiPart;
+import org.apache.wink.common.model.multipart.InPart;
 import org.apache.wink.server.utils.LinkBuilders;
 import org.hibernate.HibernateException;
 
 import com.alexmany.appStore.dao.UsersDao;
+import com.alexmany.appStore.model.Anuncis;
 import com.alexmany.appStore.model.UserRole;
 import com.alexmany.appStore.model.Users;
 import com.alexmany.appStore.utils.Constants;
+import com.alexmany.appStore.utils.ImageUtils;
 import com.alexmany.appStore.utils.Utils;
 
 @Workspace(workspaceTitle = "services", collectionTitle = "userService")
@@ -55,20 +63,18 @@ public class UsersService {
 			@Context UriInfo uriInfo) {
 
 		try {
-	
+
 			String userName = uriInfo.getQueryParameters().get("user").get(0);
 
-			
 			Users userFound = this.usersDao.findByUsername(userName);
-			if (userFound == null){
+			if (userFound == null) {
 				return "{\"ok\":\"ko\"}";
 			}
-				 
+
 			this.usersDao.delete(userFound);
 
-			 return "{\"ok\":\"ok\"}";
-			
-			
+			return "{\"ok\":\"ok\"}";
+
 		} catch (Exception e) {
 			return "{\"ok\":\"ko\"}";
 		}
@@ -84,7 +90,6 @@ public class UsersService {
 
 			String userName = uriInfo.getQueryParameters().get("user").get(0);
 			String password = uriInfo.getQueryParameters().get("pass").get(0);
-			
 
 			Users userFound = this.usersDao.findByUsername(userName);
 			if (userFound != null)
@@ -149,6 +154,60 @@ public class UsersService {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
+		}
+	}
+
+	@POST
+	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+	@Consumes(MediaTypeUtils.MULTIPART_FORM_DATA)
+	@Path("/uploadFoto")
+	public String uploadFoto(InMultiPart inMP, @Context UriInfo uriInfo)
+			throws IOException {
+
+		
+		String idAnunci = uriInfo.getQueryParameters().get("idAnunci").get(0);
+		
+		while (inMP.hasNext()) {
+			
+			InPart part = inMP.next();		
+			InputStream imageInputStream = part.getBody(InputStream.class, null);
+			BufferedImage bufferedImage =ImageIO.read(imageInputStream);
+			
+			bufferedImage = ImageUtils.resizeImage(bufferedImage, ImageUtils.IMAGE_JPEG , 100, 100);
+			
+			ImageUtils.saveImage(bufferedImage, "img_"+idAnunci, ImageUtils.IMAGE_JPEG);						
+		}
+		return "{\"ok\":\"ok\"}";
+	}
+	
+	@GET
+	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+	@Path("/saveAnunci")
+	public String saveAnunci(@Context LinkBuilders linkProcessor,
+			@Context UriInfo uriInfo) {
+
+		try {
+
+			String json = "";
+			String descripcio = uriInfo.getQueryParameters().get("descripcio").get(0);
+			String titol = uriInfo.getQueryParameters().get("titol").get(0);
+			String preu = uriInfo.getQueryParameters().get("preu").get(0);
+			if (descripcio == null || descripcio.equals("") || titol == null
+					|| titol.equals("") || preu ==null ||preu.equals("null")) {
+				return "{\"ok\":\"ko\"}";
+			}
+			
+			Anuncis anunci = new Anuncis(titol,descripcio,preu);
+			
+			
+		
+			return json;
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";		
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
