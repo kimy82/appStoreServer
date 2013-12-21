@@ -12,14 +12,21 @@ import com.alexmany.appStore.model.Anuncis;
 
 public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 
-	public void save(Anuncis anunci) {
+	/**
+	 * Save an Anunci
+	 * @param Anunci to be saved.
+	 * @return identifier or null if anunci already exist
+	 */
+	public Long save(Anuncis anunci) {
+		Long idAnunci=null;
 		try {
 			if (anunci.getId() != null) {
-				getHibernateTemplate().save(anunci);
+				idAnunci = (Long) getHibernateTemplate().save(anunci);
 			}
 		} catch (Exception e) {
 			throw new DAOException(e.getMessage());
 		}
+		return idAnunci;
 
 	}
 

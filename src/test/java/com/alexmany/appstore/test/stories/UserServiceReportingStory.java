@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.jbehave.core.annotations.Configure;
 import org.jbehave.core.configuration.Configuration;
 import org.jbehave.core.embedder.EmbedderControls;
 import org.jbehave.core.embedder.StoryControls;
@@ -23,7 +22,6 @@ import org.jbehave.core.reporters.FreemarkerViewGenerator;
 import org.jbehave.core.reporters.PrintStreamStepdocReporter;
 import org.jbehave.core.reporters.StoryReporterBuilder;
 import org.jbehave.core.steps.InjectableStepsFactory;
-import org.jbehave.core.steps.InstanceStepsFactory;
 import org.jbehave.core.steps.MarkUnmatchedStepsAsPending;
 import org.jbehave.core.steps.ParameterControls;
 import org.jbehave.core.steps.ParameterConverters;
@@ -35,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import com.alexmany.appstore.test.steps.AnunciSteps;
 import com.alexmany.appstore.test.steps.UserServiceSteps;
 import com.thoughtworks.paranamer.NullParanamer;
 
@@ -45,6 +44,9 @@ public class UserServiceReportingStory extends JUnitStories {
 
 	@Autowired
 	UserServiceSteps restfullsteps;
+	
+	@Autowired
+	AnunciSteps anunciSteps;
 
 	@Override
 	protected List<String> storyPaths() {

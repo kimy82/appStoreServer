@@ -7,7 +7,7 @@ import com.alexmany.appStore.model.Anuncis;
 
 public interface AnuncisDao {
 	
-	void save(Anuncis anunci) ;
+	Long save(Anuncis anunci) ;
 	
 	void update(Anuncis anunci);
 	

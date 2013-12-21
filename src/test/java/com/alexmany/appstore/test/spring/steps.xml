@@ -6,6 +6,7 @@
 
 
 	<bean id="restfullsteps" class="com.alexmany.appstore.test.steps.UserServiceSteps" />
+	<bean id="anunciSteps" class="com.alexmany.appstore.test.steps.AnunciSteps" />
 
 
 </beans>

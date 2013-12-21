@@ -42,6 +42,7 @@ import org.apache.wink.common.model.multipart.InPart;
 import org.apache.wink.server.utils.LinkBuilders;
 import org.hibernate.HibernateException;
 
+import com.alexmany.appStore.dao.AnuncisDao;
 import com.alexmany.appStore.dao.UsersDao;
 import com.alexmany.appStore.model.Anuncis;
 import com.alexmany.appStore.model.UserRole;
@@ -55,6 +56,7 @@ import com.alexmany.appStore.utils.Utils;
 public class UsersService {
 
 	UsersDao usersDao;
+	AnuncisDao anuncisDao;
 
 	@GET
 	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
@@ -167,22 +169,40 @@ public class UsersService {
 	public String uploadFoto(InMultiPart inMP, @Context UriInfo uriInfo)
 			throws IOException {
 
+		try{
+		String idUser = uriInfo.getQueryParameters().get("idUser").get(0);
+		String idAnunciFromClient = uriInfo.getQueryParameters().get("idAnunci").get(0);
 		
-		String idAnunci = uriInfo.getQueryParameters().get("idAnunci").get(0);
+		//id null vol dir que encara no ha estat creat
+		if(idAnunciFromClient.equals("null")){
+			Long idAnunci =this.anuncisDao.save(new Anuncis("titol","descripcio","preu"));	
+			if(idAnunci==null)
+				throw new Exception();
+			idAnunciFromClient = String.valueOf(idAnunci);
+		}
 		
 		while (inMP.hasNext()) {
 			
-			InPart part = inMP.next();		
+			InPart part = inMP.next();
 			InputStream imageInputStream = part.getBody(InputStream.class, null);
 			BufferedImage bufferedImage =ImageIO.read(imageInputStream);
 			
 			bufferedImage = ImageUtils.resizeImage(bufferedImage, ImageUtils.IMAGE_JPEG , 100, 100);
 			
-			ImageUtils.saveImage(bufferedImage, "img_"+idAnunci, ImageUtils.IMAGE_JPEG);						
+			ImageUtils.saveImage(bufferedImage, "img_"+idAnunciFromClient, ImageUtils.IMAGE_JPEG);
 		}
-		return "{\"ok\":\"ok\"}";
+		return "{\"ok\":\"ok\",\"id\":\"1\"}";
+		}catch(Exception e){
+			return "{\"ok\":\"ko\"}";
+		}
 	}
 	
+	/**
+	 * 
+	 * @param linkProcessor
+	 * @param uriInfo
+	 * @return json ok ok id id si ha anat be o ok ko si ha anat malament
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
 	@Path("/saveAnunci")
@@ -190,21 +210,24 @@ public class UsersService {
 			@Context UriInfo uriInfo) {
 
 		try {
-
-			String json = "";
+			
 			String descripcio = uriInfo.getQueryParameters().get("descripcio").get(0);
 			String titol = uriInfo.getQueryParameters().get("titol").get(0);
 			String preu = uriInfo.getQueryParameters().get("preu").get(0);
+			String idAnunci = uriInfo.getQueryParameters().get("idAnunci").get(0);
 			if (descripcio == null || descripcio.equals("") || titol == null
 					|| titol.equals("") || preu ==null ||preu.equals("null")) {
 				return "{\"ok\":\"ko\"}";
 			}
 			
 			Anuncis anunci = new Anuncis(titol,descripcio,preu);
-			
-			
-		
-			return json;
+			if(idAnunci.equals("null")){
+				Long idAnunciLong = this.anuncisDao.save(anunci);
+				idAnunci = String.valueOf(idAnunciLong);
+			}else{
+				this.anuncisDao.update(anunci);
+			}
+			return "{\"ok\":\"ok\",\"id\":\""+idAnunci+"\"}";
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";		
@@ -216,6 +239,10 @@ public class UsersService {
 
 	public void setUsersDao(UsersDao usersDao) {
 		this.usersDao = usersDao;
+	}
+
+	public void setAnuncisDao(AnuncisDao anuncisDao) {
+		this.anuncisDao = anuncisDao;
 	}
 
 }

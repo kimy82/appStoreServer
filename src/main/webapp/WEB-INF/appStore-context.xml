@@ -23,10 +23,14 @@
 
 	<!-- Serveis rest -->	
 	<bean id="appStoreSrv" class="com.alexmany.appStore.restfull.UsersService" >
-	    <property name="usersDao" ref="usersDao"></property> 
+	    <property name="usersDao" ref="usersDao"></property>
+	    <property name="anuncisDao" ref="anuncisDao"></property> 
 	</bean>
 	<!-- DAOS -->
 	<bean id="usersDao" class="com.alexmany.appStore.dao.impl.UsersDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
+   <bean id="anuncisDao" class="com.alexmany.appStore.dao.impl.AnuncisDaoImpl" >
    		<property name="sessionFactory" ref="sessionFactory"></property>
    </bean>
    
