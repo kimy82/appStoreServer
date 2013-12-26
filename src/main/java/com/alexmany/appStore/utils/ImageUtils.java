@@ -145,7 +145,7 @@ public class ImageUtils {
 			writer = (ImageWriter) iter.next();
 
 			ImageOutputStream ios = ImageIO.createImageOutputStream(new File(
-					toFileName));
+					"/images/"+toFileName+".jpg"));
 			writer.setOutput(ios);
 
 			ImageWriteParam iwparam = new JPEGImageWriteParam(

@@ -20,7 +20,7 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 	public Long save(Anuncis anunci) {
 		Long idAnunci=null;
 		try {
-			if (anunci.getId() != null) {
+			if (anunci.getId() == null) {
 				idAnunci = (Long) getHibernateTemplate().save(anunci);
 			}
 		} catch (Exception e) {
@@ -57,8 +57,14 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 	}
 
 	@Transactional
-	public List<Anuncis> getAll() {
+	public List<Anuncis> getAll(int init) {
 
-		return getHibernateTemplate().loadAll(Anuncis.class);
+
+		Session session = this.getSessionFactory().openSession();
+		session.beginTransaction();
+		List<Anuncis> anuncis = (List<Anuncis>) session.createQuery("from Anuncis a ").setFirstResult(init).setMaxResults(20);		
+		session.close();
+		
+		return anuncis;
 	}
 }

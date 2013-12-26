@@ -1,13 +1,17 @@
 package com.alexmany.appStore.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
@@ -35,6 +39,8 @@ public class Anuncis implements Serializable {
 	private String preu;
 	
 	private Users user;
+	
+	private List<ImageAnunci> imagesAnunci = new ArrayList<ImageAnunci>();
 
 
 	// CONSTRUCTORS
@@ -44,6 +50,13 @@ public class Anuncis implements Serializable {
 		this.descripcio = descripcio;
 		this.preu = preu;
 	}
+	
+	
+
+	public Anuncis() {
+	}
+
+
 
 	// GETTERS i SETTERS
 	@Id
@@ -95,6 +108,16 @@ public class Anuncis implements Serializable {
 
 	public void setUser(Users user) {
 		this.user = user;
+	}
+	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "anunci")
+	@Cascade({CascadeType.ALL})
+	public List<ImageAnunci> getImagesAnunci() {
+		return imagesAnunci;
+	}
+
+	public void setImagesAnunci(List<ImageAnunci> imagesAnunci) {
+		this.imagesAnunci = imagesAnunci;
 	}
 
 	@Override

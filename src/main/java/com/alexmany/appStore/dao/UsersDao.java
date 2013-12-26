@@ -8,7 +8,7 @@ import com.alexmany.appStore.model.Users;
 
 public interface UsersDao {
 	
-	void save(Users user) ;
+	Long save(Users user) ;
 	
 	void update(Users user);
 	

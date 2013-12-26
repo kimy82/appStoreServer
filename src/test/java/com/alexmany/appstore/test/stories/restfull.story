@@ -25,7 +25,7 @@ Then I can login with response <responselogin>
 
 Examples:
 user|response|responselogin
-joaquim.orra@gmail.com|{"ok":"ok"}|{"ok":"ok","username":"joaquim.orra@gmail.com","role":"ROLE_CLIENT"}
-joaquim.orra@gmail|{"ok":"ok"}|{"ok":"ok","username":"joaquim.orra@gmail","role":"ROLE_CLIENT"}
+joaquim.orra@gmail.com|{"ok":"ok","id":"1"}|{"ok":"ok","username":"joaquim.orra@gmail.com","role":"ROLE_CLIENT"}
+joaquim.orra@gmail|{"ok":"ok","id":"1"}|{"ok":"ok","username":"joaquim.orra@gmail","role":"ROLE_CLIENT"}
 xxxx|{"ok":"ko"}|{"ok":"ok","username":"xxxx","role":"ROLE_CLIENT"}
 null|{"ok":"ko"}|{"ok":"ko"}

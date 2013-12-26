@@ -24,6 +24,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
@@ -45,11 +47,15 @@ import org.hibernate.HibernateException;
 import com.alexmany.appStore.dao.AnuncisDao;
 import com.alexmany.appStore.dao.UsersDao;
 import com.alexmany.appStore.model.Anuncis;
+import com.alexmany.appStore.model.ImageAnunci;
 import com.alexmany.appStore.model.UserRole;
 import com.alexmany.appStore.model.Users;
+import com.alexmany.appStore.pojos.AnuncisTO;
 import com.alexmany.appStore.utils.Constants;
 import com.alexmany.appStore.utils.ImageUtils;
 import com.alexmany.appStore.utils.Utils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Workspace(workspaceTitle = "services", collectionTitle = "userService")
 @Path("/service/userService")
@@ -106,9 +112,9 @@ public class UsersService {
 			userRole = usersDao.loadRole(Constants.ROLE_CLIENT);
 
 			user.setUserRole(userRole);
-			this.usersDao.save(user);
+			Long id = this.usersDao.save(user);
 
-			return "{\"ok\":\"ok\"}";
+			return "{\"ok\":\"ok\",\"id\":\""+id+"\"}";
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -168,18 +174,28 @@ public class UsersService {
 	@Path("/uploadFoto")
 	public String uploadFoto(InMultiPart inMP, @Context UriInfo uriInfo)
 			throws IOException {
-
+		Users user = null;
+		Anuncis anunci = null;
 		try{
-		String idUser = uriInfo.getQueryParameters().get("idUser").get(0);
-		String idAnunciFromClient = uriInfo.getQueryParameters().get("idAnunci").get(0);
-		
+			String idAnunciFromClient = uriInfo.getQueryParameters().get("idAnunci").get(0);
+			String idUser = uriInfo.getQueryParameters().get("idUser").get(0);
 		//id null vol dir que encara no ha estat creat
+		if(idUser.equals("null") || idUser.equals("") || idUser.equals("undefined")){
+			throw new Exception();
+		}else{
+			user = this.usersDao.load(new Long(idUser));
+		}
+		
 		if(idAnunciFromClient.equals("null")){
-			Long idAnunci =this.anuncisDao.save(new Anuncis("titol","descripcio","preu"));	
+			
+			anunci = new Anuncis("titol","descripcio","preu");
+			anunci.setUser(user);
+			Long idAnunci =this.anuncisDao.save(anunci);	
 			if(idAnunci==null)
 				throw new Exception();
 			idAnunciFromClient = String.valueOf(idAnunci);
 		}
+		anunci = this.anuncisDao.load(new Long(idAnunciFromClient));
 		
 		while (inMP.hasNext()) {
 			
@@ -188,10 +204,14 @@ public class UsersService {
 			BufferedImage bufferedImage =ImageIO.read(imageInputStream);
 			
 			bufferedImage = ImageUtils.resizeImage(bufferedImage, ImageUtils.IMAGE_JPEG , 100, 100);
-			
-			ImageUtils.saveImage(bufferedImage, "img_"+idAnunciFromClient, ImageUtils.IMAGE_JPEG);
+			String name ="img_"+idAnunciFromClient+"_"+idUser+"_"+anunci.getImagesAnunci().size();
+			ImageUtils.saveImage(bufferedImage, name, ImageUtils.IMAGE_JPEG);
+			ImageAnunci imageAnunci = new ImageAnunci(name);
+			anunci.getImagesAnunci().add(imageAnunci);
+			this.anuncisDao.update(anunci);
+		
 		}
-		return "{\"ok\":\"ok\",\"id\":\"1\"}";
+		return "{\"ok\":\"ok\",\"id\":\""+idAnunciFromClient+"\"}";
 		}catch(Exception e){
 			return "{\"ok\":\"ko\"}";
 		}
@@ -221,10 +241,11 @@ public class UsersService {
 			}
 			
 			Anuncis anunci = new Anuncis(titol,descripcio,preu);
-			if(idAnunci.equals("null")){
+			if(idAnunci.equals("null") || idAnunci == null || idAnunci.equals("undefined")){
 				Long idAnunciLong = this.anuncisDao.save(anunci);
 				idAnunci = String.valueOf(idAnunciLong);
 			}else{
+				anunci.setId(new Long(idAnunci));
 				this.anuncisDao.update(anunci);
 			}
 			return "{\"ok\":\"ok\",\"id\":\""+idAnunci+"\"}";
@@ -236,6 +257,48 @@ public class UsersService {
 			return "{\"ok\":\"ko\"}";
 		}
 	}
+	
+	/**
+	 * 
+	 * @param linkProcessor
+	 * @param uriInfo
+	 * @return json of anuncis. {anunci[imatge(url),preu,titol]}
+	 */
+	@GET
+	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+	@Path("/getAnuncis")
+	public String getAnuncis(@Context LinkBuilders linkProcessor,
+			@Context UriInfo uriInfo) {
+		
+		List<AnuncisTO> anuncisTOList = new ArrayList<AnuncisTO>();
+		String init = uriInfo.getQueryParameters().get("init").get(0);
+		try {
+			List<Anuncis> anuncisList = this.anuncisDao.getAll(Integer.parseInt(init));
+			
+			for(Anuncis anunci : anuncisList){
+				AnuncisTO anunciTO = new AnuncisTO(anunci.getTitol(),"null", anunci.getPreu());
+				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
+					anunciTO.setPath("http://192.168.1.74:8080/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+				}
+				anuncisTOList.add(anunciTO);
+				
+			}
+			
+			 Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
+			 String json= gson.toJson(anuncisTOList);
+			 return json;
+			
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
+		}
+	}
+	
+	
+	
 
 	public void setUsersDao(UsersDao usersDao) {
 		this.usersDao = usersDao;

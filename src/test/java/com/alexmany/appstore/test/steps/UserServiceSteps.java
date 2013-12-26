@@ -156,7 +156,7 @@ public class UserServiceSteps {
 			userFound.setPassword("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8");
 			Mockito.when(userDaoMock.findByUsername(userName))
 					.thenReturn(null).thenReturn(userFound);
-			Mockito.doNothing().when(userDaoMock).save(Mockito.any(Users.class));
+			Mockito.doReturn(new Long("1")).when(userDaoMock).save(Mockito.any(Users.class));
 			UserRole userRole = new UserRole();
 			userRole.setRole("CLIENT_ROLE");
 			Mockito.doReturn(userRole).when(userDaoMock).loadRole(Mockito.anyLong());

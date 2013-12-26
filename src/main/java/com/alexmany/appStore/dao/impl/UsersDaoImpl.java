@@ -13,18 +13,23 @@ import com.alexmany.appStore.model.Users;
 
 public class UsersDaoImpl extends HibernateDaoSupport implements UsersDao{
 
-	public void save( Users user ){
-		
+	/**
+	 * Mira si existeix l'usuari si. Si no existeix el guarda i retorna l'id
+	 * @param Users
+	 * @return id Users
+	 * @throws DAOException si ja existia
+	 */
+	public Long save( Users user ){
+		Long idUser = null;
 		Users userInDB = findByUsername(user.getUsername());
 		if(userInDB==null){		 
-			getHibernateTemplate().save(user);
+			idUser = (Long) getHibernateTemplate().save(user);
 		}else{
 			throw new DAOException("User exist");
 		}
-    
+		return idUser;
 	}
 
-	
 	
 	public void update( Users user ){
 

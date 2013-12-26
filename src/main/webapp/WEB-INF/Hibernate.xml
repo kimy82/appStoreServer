@@ -24,7 +24,8 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 			<list>
 				<value>com.alexmany.appStore.model.Users</value>
 				<value>com.alexmany.appStore.model.UserRole</value>
-				<value>com.alexmany.appStore.model.Anuncis</value>					
+				<value>com.alexmany.appStore.model.Anuncis</value>	
+				<value>com.alexmany.appStore.model.ImageAnunci</value>				
 			</list>
     	</property>
 

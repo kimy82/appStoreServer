@@ -1,8 +1,5 @@
 package com.alexmany.appstore.test.steps;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +21,9 @@ import org.mockito.Mockito;
 import com.alexmany.appStore.dao.AnuncisDao;
 import com.alexmany.appStore.dao.UsersDao;
 import com.alexmany.appStore.model.Anuncis;
-import com.alexmany.appStore.model.UserRole;
 import com.alexmany.appStore.model.Users;
 import com.alexmany.appStore.restfull.UsersService;
+import com.google.gson.Gson;
 
 /**
  * 
@@ -43,6 +40,8 @@ public class AnunciSteps {
 	private UsersDao userDaoMock;
 	private AnuncisDao anunciDaoMock;
 	private Users userFound;
+	private Integer numberOfAnuncis;
+	private Integer init;
 
 	@Given("I save a foto without presaved anunci")
 	public void testSaveFotoWithOutAnunci() throws Exception {
@@ -60,6 +59,8 @@ public class AnunciSteps {
 		Mockito.when(inMultiPartMock.next()).thenReturn(inPart);
 		this.responseString = this.srv.uploadFoto(inMultiPartMock, uriInfo);
 		Mockito.verify(uriInfo, Mockito.times(2)).getQueryParameters();
+		Mockito.verify(this.userDaoMock, Mockito.times(1)).load(new Long("1"));
+		Mockito.verify(this.anunciDaoMock, Mockito.times(1)).load(new Long("1"));
 		Assert.assertEquals(responseString, "{\"ok\":\"ok\",\"id\":\"1\"}");
 		
 	}
@@ -77,7 +78,7 @@ public class AnunciSteps {
 
 		Mockito.verify(uriInfo, Mockito.times(6)).getQueryParameters();
 		Mockito.verify(this.anunciDaoMock, Mockito.times(1)).save(Mockito.any(Anuncis.class));
-		Mockito.verify(this.anunciDaoMock, Mockito.times(1)).update(Mockito.any(Anuncis.class));
+		Mockito.verify(this.anunciDaoMock, Mockito.times(2)).update(Mockito.any(Anuncis.class));
 
 	}
 	
@@ -107,9 +108,59 @@ public class AnunciSteps {
 		Mockito.when(inMultiPartMock.next()).thenReturn(inPart);
 		this.responseString = this.srv.uploadFoto(inMultiPartMock, uriInfo);
 		Mockito.verify(uriInfo, Mockito.times(6)).getQueryParameters();
+		Mockito.verify(this.userDaoMock, Mockito.times(1)).load(new Long("1"));
+		Mockito.verify(this.anunciDaoMock, Mockito.times(1)).load(new Long("1"));
 		Assert.assertEquals(responseString, "{\"ok\":\"ok\",\"id\":\"1\"}");
 
 	}
+	
+	
+	@Given("There are $x anuncis")
+	public void thereareX(@Named("x") String x) {
+
+		this.anunciDaoMock = Mockito.mock(AnuncisDao.class);
+		
+		this.numberOfAnuncis = Integer.parseInt(x);
+
+	}
+
+	@When("I the anuncis with $init")
+	public void testGetAnuncis(@Named("init") String init) {
+
+		List <Anuncis> anuncisList = new ArrayList<Anuncis>();
+		this.init = Integer.parseInt(init);
+		
+		for(int i= this.init ; i <this.numberOfAnuncis; i++){
+			if(i-this.init>=20)break;
+			anuncisList.add(new Anuncis("titol", "descripcio","preu"));
+		}
+		Mockito.when(anunciDaoMock.getAll(Integer.parseInt(init))).thenReturn(anuncisList);
+		
+		srv.setAnuncisDao(this.anunciDaoMock);
+	}
+	
+	@Then("I get $y anuncis")
+	public void testRecieveAnmuncis(@Named("y") String y) throws Exception {
+		
+		uriInfo = Mockito.mock(UriInfo.class);
+		@SuppressWarnings("unchecked")
+		MultivaluedMap<String, String> multi = Mockito
+				.mock(MultivaluedMap.class);
+		List<String> init = new ArrayList<String>();
+		init.add(String.valueOf(this.init));
+		Mockito.when(multi.get("init")).thenReturn(init);
+		
+		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
+		link = Mockito.mock(LinkBuilders.class);		
+		
+		this.responseString = this.srv.getAnuncis(link, uriInfo);
+		Mockito.verify(uriInfo, Mockito.times(1)).getQueryParameters();
+		
+		Mockito.verify(this.anunciDaoMock, Mockito.times(1)).getAll(this.init);
+		List objects = new Gson().fromJson(this.responseString, List.class);
+		Assert.assertEquals(Integer.parseInt(y), objects.size());	
+	}
+
 	
 	/**
 	 * Create de mocks for the AnunciDAO and the params to rest service
@@ -124,8 +175,16 @@ public class AnunciSteps {
 		this.anunciDaoMock = Mockito.mock(AnuncisDao.class);
 		Mockito.when(anunciDaoMock.save(Mockito.any(Anuncis.class))).thenReturn(new Long("1"));
 		Mockito.doNothing().when(anunciDaoMock).update(Mockito.any(Anuncis.class));
+		Anuncis anunci = new Anuncis("titol","descripco","preu");
+		anunci.setId(new Long("1"));
+		Mockito.doReturn(anunci).when(anunciDaoMock).load(new Long("1"));
+		
+		this.userDaoMock = Mockito.mock(UsersDao.class);		
+		Mockito.when(this.userDaoMock.load(new Long("1"))).thenReturn(Mockito.mock(Users.class));
+		
 		
 		srv.setAnuncisDao(anunciDaoMock);
+		srv.setUsersDao(userDaoMock);
 
 	}
 	
@@ -169,8 +228,17 @@ public class AnunciSteps {
 		
 		// Mocks for hibernate
 		this.anunciDaoMock = Mockito.mock(AnuncisDao.class);
-		Mockito.when(anunciDaoMock.save(Mockito.any(Anuncis.class))).thenReturn(new Long("1"));	
+		Mockito.when(anunciDaoMock.save(Mockito.any(Anuncis.class))).thenReturn(new Long("1"));
+		Anuncis anunci = new Anuncis("titol","descripco","preu");
+		anunci.setId(new Long("1"));
+		Mockito.doReturn(anunci).when(anunciDaoMock).load(new Long("1"));
+		
+		this.userDaoMock = Mockito.mock(UsersDao.class);		
+		Mockito.when(this.userDaoMock.load(new Long("1"))).thenReturn(Mockito.mock(Users.class));
+		
 		srv.setAnuncisDao(anunciDaoMock);
+		srv.setUsersDao(userDaoMock);
+		
 
 	}
 	

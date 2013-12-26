@@ -13,9 +13,8 @@ public interface AnuncisDao {
 	
 	void delete(Anuncis anunci);
 	
-	List<Anuncis> getAll();
+	List<Anuncis> getAll(int init);
 	
 	Anuncis load( Long id );
-	
 	
 }
