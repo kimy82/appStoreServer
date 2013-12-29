@@ -111,7 +111,7 @@ public class Anuncis implements Serializable {
 	}
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "anunci")
-	@Cascade({CascadeType.ALL})
+	@Cascade({CascadeType.SAVE_UPDATE})
 	public List<ImageAnunci> getImagesAnunci() {
 		return imagesAnunci;
 	}

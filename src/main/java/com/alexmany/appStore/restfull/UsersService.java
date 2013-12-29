@@ -203,10 +203,12 @@ public class UsersService {
 			InputStream imageInputStream = part.getBody(InputStream.class, null);
 			BufferedImage bufferedImage =ImageIO.read(imageInputStream);
 			
+			String path = System.getProperty("user.home");
 			bufferedImage = ImageUtils.resizeImage(bufferedImage, ImageUtils.IMAGE_JPEG , 100, 100);
 			String name ="img_"+idAnunciFromClient+"_"+idUser+"_"+anunci.getImagesAnunci().size();
 			ImageUtils.saveImage(bufferedImage, name, ImageUtils.IMAGE_JPEG);
 			ImageAnunci imageAnunci = new ImageAnunci(name);
+			imageAnunci.setAnunci(anunci);
 			anunci.getImagesAnunci().add(imageAnunci);
 			this.anuncisDao.update(anunci);
 		
@@ -262,7 +264,7 @@ public class UsersService {
 	 * 
 	 * @param linkProcessor
 	 * @param uriInfo
-	 * @return json of anuncis. {anunci[imatge(url),preu,titol]}
+	 * @return json of anuncis. {anunci[path(url imatge),preu,titol]}
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
@@ -278,7 +280,7 @@ public class UsersService {
 			for(Anuncis anunci : anuncisList){
 				AnuncisTO anunciTO = new AnuncisTO(anunci.getTitol(),"null", anunci.getPreu());
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciTO.setPath("http://192.168.1.74:8080/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+					anunciTO.setPath("http://192.168.1.74:8080/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
 				}
 				anuncisTOList.add(anunciTO);
 				

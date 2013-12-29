@@ -112,7 +112,7 @@ public class ImageUtils {
 	public static boolean saveImage(BufferedImage image, String toFileName,
 			int type) {
 		try {
-			return ImageIO.write(image, type == IMAGE_JPEG ? "jpg" : "png",new File(toFileName));
+			return ImageIO.write(image, type == IMAGE_JPEG ? "jpg" : "png",new File("C:/apache-tomcat-7.0.42/webapps/AppStore/images/"+toFileName+".jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -139,13 +139,14 @@ public class ImageUtils {
 				throw new UnsupportedOperationException(
 						"PNG compression not implemented");
 			}
+			
 
 			Iterator iter = ImageIO.getImageWritersByFormatName("jpg");
 			ImageWriter writer;
 			writer = (ImageWriter) iter.next();
 
 			ImageOutputStream ios = ImageIO.createImageOutputStream(new File(
-					"/images/"+toFileName+".jpg"));
+					"C:/apache-tomcat-7.0.42/webapps/AppStore/images/"+toFileName+".jpg"));
 			writer.setOutput(ios);
 
 			ImageWriteParam iwparam = new JPEGImageWriteParam(
