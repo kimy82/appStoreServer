@@ -84,7 +84,7 @@ public class UserServiceSteps {
 
 		this.responseString = srv.insert(link, uriInfo);
 
-		Mockito.verify(uriInfo, Mockito.times(2)).getQueryParameters();
+		Mockito.verify(uriInfo, Mockito.times(4)).getQueryParameters();
 		Mockito.verify(userDaoMock, Mockito.times(1)).findByUsername(
 				Mockito.anyString());
 		if (!this.userName.equals("xxxx") && !this.userName.equals("null")) {
@@ -173,11 +173,17 @@ public class UserServiceSteps {
 				.mock(MultivaluedMap.class);
 		List<String> users = new ArrayList<String>();
 		users.add(userName);
-		List<String> passwords = new ArrayList<String>();
 		users.add(userName);
+		List<String> passwords = new ArrayList<String>();
 		passwords.add("password");
+		List<String> longituds = new ArrayList<String>();		
+		longituds.add("3.454545");
+		List<String> latituds = new ArrayList<String>();		
+		latituds.add("3.454545");
 		Mockito.when(multi.get("user")).thenReturn(users);
 		Mockito.when(multi.get("pass")).thenReturn(passwords);
+		Mockito.when(multi.get("lon")).thenReturn(longituds);
+		Mockito.when(multi.get("lat")).thenReturn(latituds);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);
 

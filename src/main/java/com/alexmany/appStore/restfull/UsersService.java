@@ -98,6 +98,8 @@ public class UsersService {
 
 			String userName = uriInfo.getQueryParameters().get("user").get(0);
 			String password = uriInfo.getQueryParameters().get("pass").get(0);
+			String longitud = uriInfo.getQueryParameters().get("lon").get(0);
+			String latitud = uriInfo.getQueryParameters().get("lat").get(0);
 
 			Users userFound = this.usersDao.findByUsername(userName);
 			if (userFound != null)
@@ -106,6 +108,8 @@ public class UsersService {
 			Users user = new Users();
 			user.setPassword(password);
 			user.setUsername(userName);
+			user.setLatitud(new Float(latitud));
+			user.setLongitud(new Float(longitud));
 
 			UserRole userRole = new UserRole();
 

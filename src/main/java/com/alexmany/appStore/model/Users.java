@@ -33,6 +33,10 @@ public class Users implements Serializable {
 	private String username;
 
 	private String password;
+	
+	private Float latitud;
+	
+	private Float longitud;
 
 	protected UserRole userRole;
 	
@@ -108,7 +112,24 @@ public class Users implements Serializable {
 		this.anuncis = anuncis;
 	}
 	
-	
+	@Column(name = "LATITUD", unique = false, nullable = true)
+	public Float getLatitud() {
+		return latitud;
+	}
+
+	public void setLatitud(Float latitud) {
+		this.latitud = latitud;
+	}
+
+	@Column(name = "LONGITUD", unique = false, nullable = true)
+	public Float getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(Float longitud) {
+		this.longitud = longitud;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		

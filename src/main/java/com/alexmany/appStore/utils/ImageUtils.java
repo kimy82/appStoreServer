@@ -112,7 +112,7 @@ public class ImageUtils {
 	public static boolean saveImage(BufferedImage image, String toFileName,
 			int type) {
 		try {
-			return ImageIO.write(image, type == IMAGE_JPEG ? "jpg" : "png",new File("C:/apache-tomcat-7.0.42/webapps/AppStore/images/"+toFileName+".jpg"));
+			return ImageIO.write(image, type == IMAGE_JPEG ? "jpg" : "png",new File("C:/apache-tomcat-7.0.47/webapps/AppStore/images/"+toFileName+".jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
