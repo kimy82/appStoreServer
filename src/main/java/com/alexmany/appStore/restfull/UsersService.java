@@ -248,6 +248,7 @@ public class UsersService {
 			
 			Anuncis anunci = new Anuncis(titol,descripcio,preu);
 			if(idAnunci.equals("null") || idAnunci == null || idAnunci.equals("undefined")){
+				anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
 				Long idAnunciLong = this.anuncisDao.save(anunci);
 				idAnunci = String.valueOf(idAnunciLong);
 			}else{
@@ -284,7 +285,7 @@ public class UsersService {
 			for(Anuncis anunci : anuncisList){
 				AnuncisTO anunciTO = new AnuncisTO(anunci.getTitol(),"null", anunci.getPreu());
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciTO.setPath("http://192.168.1.74:8080/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+					anunciTO.setPath("http://192.168.1.10:8080/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
 				}
 				anuncisTOList.add(anunciTO);
 				

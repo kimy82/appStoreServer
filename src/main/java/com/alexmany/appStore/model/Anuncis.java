@@ -2,6 +2,7 @@ package com.alexmany.appStore.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -39,6 +40,10 @@ public class Anuncis implements Serializable {
 	private String preu;
 	
 	private Users user;
+	
+	private Date dataCreacio;
+	
+	private String Estat;
 	
 	private List<ImageAnunci> imagesAnunci = new ArrayList<ImageAnunci>();
 
@@ -119,6 +124,34 @@ public class Anuncis implements Serializable {
 	public void setImagesAnunci(List<ImageAnunci> imagesAnunci) {
 		this.imagesAnunci = imagesAnunci;
 	}
+
+	
+	
+	@Column(name = "DATA_CREACIO", unique = false, nullable = false)
+	public Date getDataCreacio() {
+		return dataCreacio;
+	}
+
+
+
+	public void setDataCreacio(Date dataCreacio) {
+		this.dataCreacio = dataCreacio;
+	}
+
+	
+
+	@Column(name = "ESTAT", unique = false, nullable = false)
+	public String getEstat() {
+		return Estat;
+	}
+
+
+
+	public void setEstat(String estat) {
+		Estat = estat;
+	}
+
+
 
 	@Override
 	public boolean equals(Object obj) {

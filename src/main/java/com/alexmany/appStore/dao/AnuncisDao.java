@@ -17,4 +17,6 @@ public interface AnuncisDao {
 	
 	Anuncis load( Long id );
 	
+	List<Anuncis> getAll();
+	
 }

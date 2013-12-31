@@ -67,4 +67,16 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		
 		return anuncis;
 	}
+	
+	@Transactional
+	public List<Anuncis> getAll() {
+
+
+		Session session = this.getSessionFactory().openSession();
+		session.beginTransaction();
+		List<Anuncis> anuncis = (List<Anuncis>) session.createQuery("from Anuncis a ").list();		
+		session.close();
+		
+		return anuncis;
+	}
 }
