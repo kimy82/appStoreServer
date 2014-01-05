@@ -1,14 +1,17 @@
 package com.alexmany.appStore.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alexmany.appStore.dao.AnuncisDao;
 import com.alexmany.appStore.exceptions.DAOException;
 import com.alexmany.appStore.model.Anuncis;
+import com.alexmany.appStore.pojos.AnuncisTOSearch;
 
 public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 
@@ -76,6 +79,19 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		session.beginTransaction();
 		List<Anuncis> anuncis = (List<Anuncis>) session.createQuery("from Anuncis a ").list();		
 		session.close();
+		
+		return anuncis;
+	}
+	
+	public List<Anuncis> search(Integer init, Integer distance, Float lat, Float lon){
+		
+		List<Anuncis> anuncis = new ArrayList<Anuncis>();
+		
+		Session session = this.getSessionFactory().openSession();
+		session.beginTransaction();
+		//session.createCriteria(Anuncis.class).add(Restrictions.le(propertyName, value))
+		anuncis =  session.createQuery("FROM Anuncis anunci where ( 6371 * acos( cos( radians(56.467056) ) * cos( radians( anunci.latitud ) ) * cos( radians( anunci.longitud ) - radians(-2.976094) ) + sin( radians(56.467056) ) * sin( radians( anunci.latitud ) ) ) ) < "+distance).setFirstResult(init).setMaxResults(20).list();		
+		session.close();		
 		
 		return anuncis;
 	}

@@ -3,6 +3,7 @@ package com.alexmany.appStore.dao;
 import java.util.List;
 
 import com.alexmany.appStore.model.Anuncis;
+import com.alexmany.appStore.pojos.AnuncisTOSearch;
 
 
 public interface AnuncisDao {
@@ -18,5 +19,7 @@ public interface AnuncisDao {
 	Anuncis load( Long id );
 	
 	List<Anuncis> getAll();
+	
+	List<Anuncis> search(Integer init, Integer distance, Float lat, Float lon);
 	
 }

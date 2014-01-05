@@ -20,6 +20,9 @@ public class AnuncisTO implements Serializable{
 	
 	@Expose
 	private String				preu;
+	
+	@Expose
+	private String				estat;
 
 	// CONSTRUCTORS
 	public AnuncisTO() {
@@ -27,11 +30,12 @@ public class AnuncisTO implements Serializable{
 		super();
 	}
 
-	public AnuncisTO(String titol, String path , String preu) {
+	public AnuncisTO(String titol, String path , String preu,String estat) {
 		super();
 		this.titol = titol;
 		this.path = path;
 		this.preu = preu;
+		this.estat = estat;
 	}
 
 	public String getTitol() {
@@ -48,6 +52,23 @@ public class AnuncisTO implements Serializable{
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public String getPreu() {
+		return preu;
+	}
+
+	public void setPreu(String preu) {
+		this.preu = preu;
+	}
+
+	public String getEstat() {
+		return estat;
+	}
+
+	public void setEstat(String estat) {
+		this.estat = estat;
 	}	
+	
 	
 }

@@ -45,6 +45,11 @@ public class Anuncis implements Serializable {
 	
 	private String Estat;
 	
+	private Float latitud;
+	
+	private Float longitud;
+
+	
 	private List<ImageAnunci> imagesAnunci = new ArrayList<ImageAnunci>();
 
 
@@ -113,6 +118,24 @@ public class Anuncis implements Serializable {
 
 	public void setUser(Users user) {
 		this.user = user;
+	}
+	
+	@Column(name = "LATITUD", unique = false, nullable = true)
+	public Float getLatitud() {
+		return latitud;
+	}
+
+	public void setLatitud(Float latitud) {
+		this.latitud = latitud;
+	}
+
+	@Column(name = "LONGITUD", unique = false, nullable = true)
+	public Float getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(Float longitud) {
+		this.longitud = longitud;
 	}
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "anunci")

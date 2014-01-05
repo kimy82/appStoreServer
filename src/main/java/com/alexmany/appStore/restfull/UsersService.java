@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -51,6 +52,7 @@ import com.alexmany.appStore.model.ImageAnunci;
 import com.alexmany.appStore.model.UserRole;
 import com.alexmany.appStore.model.Users;
 import com.alexmany.appStore.pojos.AnuncisTO;
+import com.alexmany.appStore.pojos.AnuncisTOSearch;
 import com.alexmany.appStore.utils.Constants;
 import com.alexmany.appStore.utils.ImageUtils;
 import com.alexmany.appStore.utils.Utils;
@@ -207,7 +209,6 @@ public class UsersService {
 			InputStream imageInputStream = part.getBody(InputStream.class, null);
 			BufferedImage bufferedImage =ImageIO.read(imageInputStream);
 			
-			String path = System.getProperty("user.home");
 			bufferedImage = ImageUtils.resizeImage(bufferedImage, ImageUtils.IMAGE_JPEG , 100, 100);
 			String name ="img_"+idAnunciFromClient+"_"+idUser+"_"+anunci.getImagesAnunci().size();
 			ImageUtils.saveImage(bufferedImage, name, ImageUtils.IMAGE_JPEG);
@@ -241,6 +242,12 @@ public class UsersService {
 			String titol = uriInfo.getQueryParameters().get("titol").get(0);
 			String preu = uriInfo.getQueryParameters().get("preu").get(0);
 			String idAnunci = uriInfo.getQueryParameters().get("idAnunci").get(0);
+			String longitud = uriInfo.getQueryParameters().get("lon").get(0);
+			String latitud = uriInfo.getQueryParameters().get("lat").get(0);
+			String iduser = uriInfo.getQueryParameters().get("iduser").get(0);
+			
+			Users user = this.usersDao.load(new Long(iduser));
+			
 			if (descripcio == null || descripcio.equals("") || titol == null
 					|| titol.equals("") || preu ==null ||preu.equals("null")) {
 				return "{\"ok\":\"ko\"}";
@@ -249,9 +256,37 @@ public class UsersService {
 			Anuncis anunci = new Anuncis(titol,descripcio,preu);
 			if(idAnunci.equals("null") || idAnunci == null || idAnunci.equals("undefined")){
 				anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
+				anunci.setDataCreacio(new Date());
+				anunci.setUser(user);
+				if(longitud==null ||longitud.equals("undefined") || longitud.equals("")){
+					anunci.setLongitud(user.getLongitud());
+				}else{
+					anunci.setLongitud(new Float(longitud));
+				}
+				
+				if(latitud==null ||latitud.equals("undefined") || latitud.equals("")){
+					anunci.setLatitud(user.getLatitud());
+				}else{
+					anunci.setLatitud(user.getLatitud());
+				}
+				
 				Long idAnunciLong = this.anuncisDao.save(anunci);
 				idAnunci = String.valueOf(idAnunciLong);
 			}else{
+				anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
+				anunci.setDataCreacio(new Date());
+				anunci.setUser(user);
+				if(longitud==null ||longitud.equals("undefined") || longitud.equals("")){
+					anunci.setLongitud(user.getLongitud());
+				}else{
+					anunci.setLongitud(new Float(longitud));
+				}
+				
+				if(latitud==null ||latitud.equals("undefined") || latitud.equals("")){
+					anunci.setLatitud(user.getLatitud());
+				}else{
+					anunci.setLatitud(user.getLatitud());
+				}				
 				anunci.setId(new Long(idAnunci));
 				this.anuncisDao.update(anunci);
 			}
@@ -283,9 +318,9 @@ public class UsersService {
 			List<Anuncis> anuncisList = this.anuncisDao.getAll(Integer.parseInt(init));
 			
 			for(Anuncis anunci : anuncisList){
-				AnuncisTO anunciTO = new AnuncisTO(anunci.getTitol(),"null", anunci.getPreu());
+				AnuncisTO anunciTO = new AnuncisTO(anunci.getTitol(),"null", anunci.getPreu(),anunci.getEstat());
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciTO.setPath("http://192.168.1.10:8080/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+					anunciTO.setPath("http://192.168.1.65:8080/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
 				}
 				anuncisTOList.add(anunciTO);
 				
@@ -304,7 +339,52 @@ public class UsersService {
 		}
 	}
 	
-	
+	/**
+	 * 
+	 * @param linkProcessor
+	 * @param uriInfo
+	 * @return json of anuncis within specific coords. {anunci[path(url imatge),preu,titol]}
+	 */
+	@GET
+	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+	@Path("/searchAnuncis")
+	public String searchAnuncis(@Context LinkBuilders linkProcessor,
+			@Context UriInfo uriInfo) {
+		
+		List<AnuncisTOSearch> anuncisTOList = new ArrayList<AnuncisTOSearch>();
+		String lon = uriInfo.getQueryParameters().get("lon").get(0);
+		String lat = uriInfo.getQueryParameters().get("lat").get(0);
+		String distance = uriInfo.getQueryParameters().get("distance").get(0);
+		String init = uriInfo.getQueryParameters().get("init").get(0);
+		try {
+			List<Anuncis> anuncisList = this.anuncisDao.search(Integer.parseInt(init),Integer.parseInt(distance),new Float(lat),new Float(lon));
+			
+			for(Anuncis anunci : anuncisList){
+				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "");
+				
+				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
+					anunciToSearch.setName("http://192.168.1.65:8080/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+				}
+				//( 6371 * acos( cos( radians(56.467056) ) * cos( radians( anunci.latitud ) ) * 
+				//cos( radians( anunci.longitud ) - radians(-2.976094) ) + sin( radians(56.467056) ) * sin( radians( anunci.latitud ) ) ) )
+				anunciToSearch.setDistance(6371*Math.acos(Math.cos(Math.toRadians(56.467056))*
+						Math.cos(Math.toRadians(anunci.getLatitud()))*Math.cos(Math.toRadians(anunci.getLongitud())-Math.toRadians(-2.976094))+Math.sin(Math.toRadians(56.467056))*Math.sin(Math.toRadians(anunci.getLatitud()))));
+				anuncisTOList.add(anunciToSearch);
+			}
+			
+			 Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
+			 String json= gson.toJson(anuncisTOList);
+			 return json;
+			
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
+		}
+	}
+
 	
 
 	public void setUsersDao(UsersDao usersDao) {
