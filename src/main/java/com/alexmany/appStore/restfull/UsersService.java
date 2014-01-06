@@ -21,12 +21,14 @@
 package com.alexmany.appStore.restfull;
 
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
@@ -315,12 +317,16 @@ public class UsersService {
 		List<AnuncisTO> anuncisTOList = new ArrayList<AnuncisTO>();
 		String init = uriInfo.getQueryParameters().get("init").get(0);
 		try {
+			
+			Properties prop = new Properties();
+			prop.load(new FileInputStream("config.properties"));
+			
 			List<Anuncis> anuncisList = this.anuncisDao.getAll(Integer.parseInt(init));
 			
 			for(Anuncis anunci : anuncisList){
 				AnuncisTO anunciTO = new AnuncisTO(anunci.getTitol(),"null", anunci.getPreu(),anunci.getEstat());
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciTO.setPath("http://192.168.1.65:8080/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+					anunciTO.setPath("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
 				}
 				anuncisTOList.add(anunciTO);
 				
@@ -357,13 +363,15 @@ public class UsersService {
 		String distance = uriInfo.getQueryParameters().get("distance").get(0);
 		String init = uriInfo.getQueryParameters().get("init").get(0);
 		try {
+			Properties prop = new Properties();
+			prop.load(new FileInputStream("config.properties"));
 			List<Anuncis> anuncisList = this.anuncisDao.search(Integer.parseInt(init),Integer.parseInt(distance),new Float(lat),new Float(lon));
 			
 			for(Anuncis anunci : anuncisList){
 				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "");
 				
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciToSearch.setName("http://192.168.1.65:8080/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+					anunciToSearch.setName("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
 				}
 				//( 6371 * acos( cos( radians(56.467056) ) * cos( radians( anunci.latitud ) ) * 
 				//cos( radians( anunci.longitud ) - radians(-2.976094) ) + sin( radians(56.467056) ) * sin( radians( anunci.latitud ) ) ) )
