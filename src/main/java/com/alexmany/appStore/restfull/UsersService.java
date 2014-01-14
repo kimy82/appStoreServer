@@ -314,7 +314,7 @@ public class UsersService {
 	public String getAnuncis(@Context LinkBuilders linkProcessor,
 			@Context UriInfo uriInfo) {
 		
-		List<AnuncisTO> anuncisTOList = new ArrayList<AnuncisTO>();
+		List<AnuncisTOSearch> anuncisTOList = new ArrayList<AnuncisTOSearch>();
 		String init = uriInfo.getQueryParameters().get("init").get(0);
 		try {
 			
@@ -324,12 +324,16 @@ public class UsersService {
 			List<Anuncis> anuncisList = this.anuncisDao.getAll(Integer.parseInt(init));
 			
 			for(Anuncis anunci : anuncisList){
-				AnuncisTO anunciTO = new AnuncisTO(anunci.getTitol(),"null", anunci.getPreu(),anunci.getEstat());
-				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciTO.setPath("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
-				}
-				anuncisTOList.add(anunciTO);
+				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio());
 				
+				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
+					anunciToSearch.setName("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+				}
+				//( 6371 * acos( cos( radians(56.467056) ) * cos( radians( anunci.latitud ) ) * 
+				//cos( radians( anunci.longitud ) - radians(-2.976094) ) + sin( radians(56.467056) ) * sin( radians( anunci.latitud ) ) ) )
+				anunciToSearch.setDistance(6371*Math.acos(Math.cos(Math.toRadians(56.467056))*
+						Math.cos(Math.toRadians(anunci.getLatitud()))*Math.cos(Math.toRadians(anunci.getLongitud())-Math.toRadians(-2.976094))+Math.sin(Math.toRadians(56.467056))*Math.sin(Math.toRadians(anunci.getLatitud()))));
+				anuncisTOList.add(anunciToSearch);
 			}
 			
 			 Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
@@ -368,7 +372,7 @@ public class UsersService {
 			List<Anuncis> anuncisList = this.anuncisDao.search(Integer.parseInt(init),Integer.parseInt(distance),new Float(lat),new Float(lon));
 			
 			for(Anuncis anunci : anuncisList){
-				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "");
+				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio());
 				
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
 					anunciToSearch.setName("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
