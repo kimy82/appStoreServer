@@ -112,9 +112,13 @@ public class UsersService {
 			Users user = new Users();
 			user.setPassword(password);
 			user.setUsername(userName);
-			user.setLatitud(new Float(latitud));
-			user.setLongitud(new Float(longitud));
-
+			try{
+				user.setLatitud(new Float(latitud));
+				user.setLongitud(new Float(longitud));
+			}catch(NumberFormatException e){
+				user.setLatitud(null);
+				user.setLongitud(null);
+			}
 			UserRole userRole = new UserRole();
 
 			userRole = usersDao.loadRole(Constants.ROLE_CLIENT);
