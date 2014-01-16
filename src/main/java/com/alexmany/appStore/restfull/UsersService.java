@@ -106,9 +106,12 @@ public class UsersService {
 			String latitud = uriInfo.getQueryParameters().get("lat").get(0);
 
 			Users userFound = this.usersDao.findByUsername(userName);
-			if (userFound != null)
-				return "{\"ok\":\"ko\"}";
-
+			
+			//Vol dir que ve del facebook
+			if (userFound != null){
+				return "{\"ok\":\"ok\",\"id\":\""+userFound.getId()+"\"}";
+			}
+			
 			Users user = new Users();
 			user.setPassword(password);
 			user.setUsername(userName);
