@@ -101,6 +101,7 @@ public class UsersService {
 		try {
 
 			String userName = uriInfo.getQueryParameters().get("user").get(0);
+			String email = uriInfo.getQueryParameters().get("email").get(0);
 			String password = uriInfo.getQueryParameters().get("pass").get(0);
 			String longitud = uriInfo.getQueryParameters().get("lon").get(0);
 			String latitud = uriInfo.getQueryParameters().get("lat").get(0);
@@ -109,12 +110,16 @@ public class UsersService {
 			
 			//Vol dir que ve del facebook
 			if (userFound != null){
-				return "{\"ok\":\"ok\",\"id\":\""+userFound.getId()+"\"}";
+				if(password.equals("facebook"))
+					return "{\"ok\":\"ok\",\"id\":\""+userFound.getId()+"\"}";
+				else
+					throw new Exception();
 			}
 			
 			Users user = new Users();
 			user.setPassword(password);
 			user.setUsername(userName);
+			user.setEmail(email);
 			try{
 				user.setLatitud(new Float(latitud));
 				user.setLongitud(new Float(longitud));

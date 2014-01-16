@@ -31,6 +31,9 @@ public class Users implements Serializable {
 
 	@Expose
 	private String username;
+	
+	@Expose
+	private String email;
 
 	private String password;
 	
@@ -128,6 +131,15 @@ public class Users implements Serializable {
 
 	public void setLongitud(Float longitud) {
 		this.longitud = longitud;
+	}
+
+	@Column(name = "EMAIL", unique = true, nullable = false, length = 100)
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	@Override

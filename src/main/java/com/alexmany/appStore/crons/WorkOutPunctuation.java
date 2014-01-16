@@ -35,18 +35,21 @@ public class WorkOutPunctuation implements Job {
 				userKim.setPassword("7c4a8d09ca3762af61e59520943dc26494f8941b");
 				userKim.setUsername("joaquim.orra@gmail.com");
 				userKim.setUserRole(roleSA);
+				userKim.setEmail("email000");
 				usersDao.save(userKim);
-
+				
 				Users userAlex = new Users();
 				userAlex.setPassword("7c4a8d09ca3762af61e59520943dc26494f8941b");
 				userAlex.setUsername("adp.alex@gmail.com");
 				userAlex.setUserRole(roleSA);
+				userAlex.setEmail("email00");
 				usersDao.save(userAlex);
 
 				Users userAl = new Users();
 				userAl.setPassword("7c4a8d09ca3762af61e59520943dc26494f8941b");
 				userAl.setUsername("joaquim.orra2@gmail.com");
 				userAl.setUserRole(roleC);
+				userAl.setEmail("email0");
 				usersDao.save(userAl);
 
 				Users userAl1menu = new Users();
@@ -54,22 +57,18 @@ public class WorkOutPunctuation implements Job {
 						.setPassword("7c4a8d09ca3762af61e59520943dc26494f8941b");
 				userAl1menu.setUsername("joaquim.orra3@gmail.com");
 				userAl1menu.setUserRole(roleC);
+				userAl1menu.setEmail("email1");
 				usersDao.save(userAl1menu);
 				
 				Users userAl2menu = new Users();
 				userAl2menu
 						.setPassword("7c4a8d09ca3762af61e59520943dc26494f8941b");
 				userAl2menu.setUsername("joaqñim.òrrá@gmail.es");
+				userAl2menu.setEmail("email2");
 				userAl2menu.setUserRole(roleC);
 				usersDao.save(userAl2menu);
 				
 
-				Users userAdminCompany = new Users();
-				userAdminCompany
-						.setPassword("7c4a8d09ca3762af61e59520943dc26494f8941b");
-				userAdminCompany.setUsername("user.admin.company@gmail.com");
-				userAdminCompany.setUserRole(roleA);
-				usersDao.save(userAdminCompany);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
