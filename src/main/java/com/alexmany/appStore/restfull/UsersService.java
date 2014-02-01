@@ -259,6 +259,7 @@ public class UsersService {
 			String longitud = uriInfo.getQueryParameters().get("lon").get(0);
 			String latitud = uriInfo.getQueryParameters().get("lat").get(0);
 			String iduser = uriInfo.getQueryParameters().get("iduser").get(0);
+			String city = uriInfo.getQueryParameters().get("city").get(0);
 			
 			Users user = this.usersDao.load(new Long(iduser));
 			
@@ -283,7 +284,7 @@ public class UsersService {
 				}else{
 					anunci.setLatitud(user.getLatitud());
 				}
-				
+				anunci.setCity(city);
 				Long idAnunciLong = this.anuncisDao.save(anunci);
 				idAnunci = String.valueOf(idAnunciLong);
 			}else{
@@ -336,7 +337,7 @@ public class UsersService {
 			List<Anuncis> anuncisList = this.anuncisDao.getAll(Integer.parseInt(init));
 			
 			for(Anuncis anunci : anuncisList){
-				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio());
+				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio(), anunci.getCity());
 				
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
 					anunciToSearch.setName("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
@@ -384,7 +385,7 @@ public class UsersService {
 			List<Anuncis> anuncisList = this.anuncisDao.search(Integer.parseInt(init),Integer.parseInt(distance),new Float(lat),new Float(lon));
 			
 			for(Anuncis anunci : anuncisList){
-				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio());
+				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio(), anunci.getCity());
 				
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
 					anunciToSearch.setName("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");

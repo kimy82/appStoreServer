@@ -129,10 +129,10 @@ public class AnunciSteps {
 
 		List <Anuncis> anuncisList = new ArrayList<Anuncis>();
 		this.init = Integer.parseInt(init);
-		
+
 		for(int i= this.init ; i <this.numberOfAnuncis; i++){
 			if(i-this.init>=20)break;
-			anuncisList.add(new Anuncis("titol", "descripcio","preu"));
+			anuncisList.add(new Anuncis("titol"+i, "descripcio","preu"));
 		}
 		Mockito.when(anunciDaoMock.getAll(Integer.parseInt(init))).thenReturn(anuncisList);
 		

@@ -65,7 +65,7 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 
 		Session session = this.getSessionFactory().openSession();
 		session.beginTransaction();
-		List<Anuncis> anuncis = (List<Anuncis>) session.createQuery("from Anuncis a ").setFirstResult(init).setMaxResults(20).list();		
+		List<Anuncis> anuncis = (List<Anuncis>) session.createQuery("from Anuncis a ").setCacheable(true).setFirstResult(init).setMaxResults(20).list();		
 		session.close();
 		
 		return anuncis;
@@ -90,7 +90,7 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		Session session = this.getSessionFactory().openSession();
 		session.beginTransaction();
 		//session.createCriteria(Anuncis.class).add(Restrictions.le(propertyName, value))
-		anuncis =  session.createQuery("FROM Anuncis anunci where ( 6371 * acos( cos( radians(56.467056) ) * cos( radians( anunci.latitud ) ) * cos( radians( anunci.longitud ) - radians(-2.976094) ) + sin( radians(56.467056) ) * sin( radians( anunci.latitud ) ) ) ) < "+distance).setFirstResult(init).setMaxResults(20).list();		
+		anuncis =  session.createQuery("FROM Anuncis anunci where ( 6371 * acos( cos( radians(56.467056) ) * cos( radians( anunci.latitud ) ) * cos( radians( anunci.longitud ) - radians(-2.976094) ) + sin( radians(56.467056) ) * sin( radians( anunci.latitud ) ) ) ) < "+distance).setFirstResult(init).setMaxResults(20).setCacheable(true).list();		
 		session.close();		
 		
 		return anuncis;

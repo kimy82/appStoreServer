@@ -32,11 +32,14 @@ public class AnuncisTOSearch implements Serializable{
 	@Expose
 	private String 				descripcio;
 	
+	@Expose
+	private String 				city;
+	
 	
 	
 
 	public AnuncisTOSearch(Long id, String preu, String estat,
-			Double distance, String titol, String name,String descripcio) {
+			Double distance, String titol, String name,String descripcio, String city) {
 		super();
 		this.id = id;
 		this.preu = preu;
@@ -45,6 +48,7 @@ public class AnuncisTOSearch implements Serializable{
 		this.titol = titol;
 		this.name = name;
 		this.descripcio = descripcio;
+		this.city = city;
 	}
 
 	public Long getId() {
@@ -102,7 +106,13 @@ public class AnuncisTOSearch implements Serializable{
 	public void setDescripcio(String descripcio) {
 		this.descripcio = descripcio;
 	}
-	
-	
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
 	
 }

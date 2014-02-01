@@ -45,6 +45,8 @@ public class Anuncis implements Serializable {
 	
 	private String Estat;
 	
+	private String city;
+	
 	private Float latitud;
 	
 	private Float longitud;
@@ -172,6 +174,18 @@ public class Anuncis implements Serializable {
 
 	public void setEstat(String estat) {
 		Estat = estat;
+	}
+
+
+	@Column(name = "CITY", unique = false, nullable = true)
+	public String getCity() {
+		return city;
+	}
+
+
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 
