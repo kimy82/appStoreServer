@@ -21,14 +21,12 @@
 package com.alexmany.appStore.restfull;
 
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
@@ -53,7 +51,6 @@ import com.alexmany.appStore.model.Anuncis;
 import com.alexmany.appStore.model.ImageAnunci;
 import com.alexmany.appStore.model.UserRole;
 import com.alexmany.appStore.model.Users;
-import com.alexmany.appStore.pojos.AnuncisTO;
 import com.alexmany.appStore.pojos.AnuncisTOSearch;
 import com.alexmany.appStore.utils.Constants;
 import com.alexmany.appStore.utils.ImageUtils;
@@ -67,6 +64,11 @@ public class UsersService {
 
 	UsersDao usersDao;
 	AnuncisDao anuncisDao;
+	
+	public final String server="www.alexmanydev.com";
+	public final String pathToImages="/var/www/vhosts/alexmanydev.com/appservers/apache-tomcat-7x/webapps/AppStore/images/";
+	
+
 
 	@GET
 	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
@@ -196,10 +198,11 @@ public class UsersService {
 			throws IOException {
 		Users user = null;
 		Anuncis anunci = null;
-		try{
+		try {
+
 			String idAnunciFromClient = uriInfo.getQueryParameters().get("idAnunci").get(0);
 			String idUser = uriInfo.getQueryParameters().get("idUser").get(0);
-		//id null vol dir que encara no ha estat creat
+
 		if(idUser.equals("null") || idUser.equals("") || idUser.equals("undefined")){
 			throw new Exception();
 		}else{
@@ -218,7 +221,7 @@ public class UsersService {
 		anunci = this.anuncisDao.load(new Long(idAnunciFromClient));
 		
 		while (inMP.hasNext()) {
-			
+			ImageUtils.path=pathToImages;
 			InPart part = inMP.next();
 			InputStream imageInputStream = part.getBody(InputStream.class, null);
 			BufferedImage bufferedImage =ImageIO.read(imageInputStream);
@@ -329,10 +332,12 @@ public class UsersService {
 		
 		List<AnuncisTOSearch> anuncisTOList = new ArrayList<AnuncisTOSearch>();
 		String init = uriInfo.getQueryParameters().get("init").get(0);
+		String lat = uriInfo.getQueryParameters().get("lat").get(0);
+		String lon = uriInfo.getQueryParameters().get("lon").get(0);
+		
 		try {
 			
-			Properties prop = new Properties();
-			prop.load(new FileInputStream("config.properties"));
+			
 			
 			List<Anuncis> anuncisList = this.anuncisDao.getAll(Integer.parseInt(init));
 			
@@ -340,12 +345,16 @@ public class UsersService {
 				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio(), anunci.getCity());
 				
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciToSearch.setName("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+					anunciToSearch.setName("http://"+server+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
 				}
-				//( 6371 * acos( cos( radians(56.467056) ) * cos( radians( anunci.latitud ) ) * 
-				//cos( radians( anunci.longitud ) - radians(-2.976094) ) + sin( radians(56.467056) ) * sin( radians( anunci.latitud ) ) ) )
-				anunciToSearch.setDistance(6371*Math.acos(Math.cos(Math.toRadians(56.467056))*
-						Math.cos(Math.toRadians(anunci.getLatitud()))*Math.cos(Math.toRadians(anunci.getLongitud())-Math.toRadians(-2.976094))+Math.sin(Math.toRadians(56.467056))*Math.sin(Math.toRadians(anunci.getLatitud()))));
+				
+				if(lat ==null || lat.equals("") || lon == null || lon.equals("")|| lon.equals("undefined")|| lat.equals("undefined")){
+					anunciToSearch.setDistance(0.0);
+				}else{
+					anunciToSearch.setDistance(6371*Math.acos(Math.cos(Math.toRadians(Double.parseDouble(lat)))*
+							Math.cos(Math.toRadians(anunci.getLatitud()))*Math.cos(Math.toRadians(anunci.getLongitud())-Math.toRadians(Double.parseDouble(lon)))+Math.sin(Math.toRadians(Double.parseDouble(lat)))*Math.sin(Math.toRadians(anunci.getLatitud()))));
+					
+				}
 				anuncisTOList.add(anunciToSearch);
 			}
 			
@@ -380,18 +389,16 @@ public class UsersService {
 		String distance = uriInfo.getQueryParameters().get("distance").get(0);
 		String init = uriInfo.getQueryParameters().get("init").get(0);
 		try {
-			Properties prop = new Properties();
-			prop.load(new FileInputStream("config.properties"));
+			
 			List<Anuncis> anuncisList = this.anuncisDao.search(Integer.parseInt(init),Integer.parseInt(distance),new Float(lat),new Float(lon));
 			
 			for(Anuncis anunci : anuncisList){
 				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio(), anunci.getCity());
 				
 				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciToSearch.setName("http://"+prop.getProperty("ip")+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+					anunciToSearch.setName("http://"+server+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
 				}
-				//( 6371 * acos( cos( radians(56.467056) ) * cos( radians( anunci.latitud ) ) * 
-				//cos( radians( anunci.longitud ) - radians(-2.976094) ) + sin( radians(56.467056) ) * sin( radians( anunci.latitud ) ) ) )
+			
 				anunciToSearch.setDistance(6371*Math.acos(Math.cos(Math.toRadians(56.467056))*
 						Math.cos(Math.toRadians(anunci.getLatitud()))*Math.cos(Math.toRadians(anunci.getLongitud())-Math.toRadians(-2.976094))+Math.sin(Math.toRadians(56.467056))*Math.sin(Math.toRadians(anunci.getLatitud()))));
 				anuncisTOList.add(anunciToSearch);

@@ -44,6 +44,8 @@ public class Users implements Serializable {
 	protected UserRole userRole;
 	
 	private List<Anuncis>	anuncis;
+	
+	private String deviceId;
 
 
 	// CONSTRUCTORS
@@ -140,6 +142,15 @@ public class Users implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	@Column(name = "DEVICEID", unique = true, nullable = true, length = 100)
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
 
 	@Override

@@ -28,6 +28,7 @@ public class ImageUtils {
 	public static final int IMAGE_JPEG = 0;
 	public static final int IMAGE_PNG = 1;
 	public static final int IMAGE_GIF = 2;
+	public static String path="";
 
 	/**
 	 * Resizes an image
@@ -111,8 +112,9 @@ public class ImageUtils {
 	 */
 	public static boolean saveImage(BufferedImage image, String toFileName,
 			int type) {
-		try {
-			return ImageIO.write(image, type == IMAGE_JPEG ? "jpg" : "png",new File("C:/apache-tomcat-7.0.47/webapps/AppStore/images/"+toFileName+".jpg"));
+		try {		
+			File file = new File(path+toFileName+".jpg");
+			return ImageIO.write(image, type == IMAGE_JPEG ? "jpg" : "png",file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -140,13 +142,15 @@ public class ImageUtils {
 						"PNG compression not implemented");
 			}
 			
-
+			
 			Iterator iter = ImageIO.getImageWritersByFormatName("jpg");
 			ImageWriter writer;
 			writer = (ImageWriter) iter.next();
-
+			File file = new File(path+toFileName+".jpg");
+			
+			file.createNewFile();
 			ImageOutputStream ios = ImageIO.createImageOutputStream(new File(
-					"C:/apache-tomcat-7.0.42/webapps/AppStore/images/"+toFileName+".jpg"));
+					path+toFileName+".jpg"));
 			writer.setOutput(ios);
 
 			ImageWriteParam iwparam = new JPEGImageWriteParam(

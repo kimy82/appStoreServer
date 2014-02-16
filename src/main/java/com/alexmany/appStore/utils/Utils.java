@@ -1,9 +1,13 @@
 package com.alexmany.appStore.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 public class Utils{
 
@@ -29,5 +33,16 @@ public class Utils{
 		SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
 		return df.format(data);
 		
+	}
+	
+	public static String getProperty(String property){
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileInputStream("config.properties"));
+		} catch (Exception e) {
+			if(property.equals("ip"))
+				return "www.alexmanydev.com";
+		}
+		return prop.getProperty(property);
 	}
 }

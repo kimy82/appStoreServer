@@ -16,7 +16,7 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 				<prop key="hibernate.cache.use_query_cache">true</prop>
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>				
 				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-				<prop key="hibernate.hbm2ddl.auto">create</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 			</props>
 		</property>
 
@@ -25,11 +25,11 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 				<value>com.alexmany.appStore.model.Users</value>
 				<value>com.alexmany.appStore.model.UserRole</value>
 				<value>com.alexmany.appStore.model.Anuncis</value>	
-				<value>com.alexmany.appStore.model.ImageAnunci</value>				
+				<value>com.alexmany.appStore.model.ImageAnunci</value>
+				<value>com.alexmany.appStore.model.NotificationRegister</value>
 			</list>
     	</property>
 
 	</bean>
-
 
 </beans>    

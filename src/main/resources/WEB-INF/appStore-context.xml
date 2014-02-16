@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<import resource="DataSource.xml"/>
+	<import resource="Hibernate.xml"/>
+	
+	<bean class="org.apache.wink.spring.Registrar">
+		<property name="classes">
+			<set value-type="java.lang.Class">
+			</set>
+		</property>
+		<property name="instances">
+			<set>
+				<ref local="appStoreSrv" />
+			</set>
+		</property>
+	</bean>
+
+
+	<!-- Serveis rest -->	
+	<bean id="appStoreSrv" class="com.alexmany.appStore.restfull.UsersService" >
+	    <property name="usersDao" ref="usersDao"></property>
+	    <property name="anuncisDao" ref="anuncisDao"></property> 
+	</bean>
+	<!-- DAOS -->
+	<bean id="usersDao" class="com.alexmany.appStore.dao.impl.UsersDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
+   <bean id="anuncisDao" class="com.alexmany.appStore.dao.impl.AnuncisDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
+    <bean id="registerDao" class="com.alexmany.appStore.dao.impl.RegistresDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
+   
+	<bean id="appStore.customPropertiesFactory"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>WEB-INF/appStoreWink.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="appStore.placeholderConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="order" value="1" />
+		<property name="propertiesArray">
+			<list>
+				<props>
+					<prop key="winkPropertiesFactory">appStore.customPropertiesFactory
+					</prop>
+				</props>
+			</list>
+		</property>
+	</bean>	
+	<!-- JOB PER CREAR INSERTS INICIALS A LA BBDD -->
+	<bean id="job" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="com.alexmany.appStore.crons.WorkOutPunctuation" />
+        <property name="jobDataAsMap">
+            <map>
+                 <entry key="entorn" value="local" />
+                 <entry key="usersDao" value-ref="usersDao" />                             
+            </map>
+        </property>
+    </bean>
+    <bean id="onstartup" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail" ref="job" />
+		<property name="startDelay" value="10000" />
+		<property name="repeatInterval" value="50000" />
+		<property name="repeatCount" value="0" />
+	</bean>
+		<!-- JOB PER refreesh anuncis new/normal/vell-->
+	<bean id="jobAnuncis" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="com.alexmany.appStore.crons.WorkOutAnuncis" />
+        <property name="jobDataAsMap">
+            <map>
+                 <entry key="anuncisDao" value-ref="anuncisDao" />                             
+            </map>
+        </property>
+    </bean>
+    <bean id="cronTrigger" 
+                class="org.springframework.scheduling.quartz.CronTriggerBean">
+ 
+		<property name="jobDetail" ref="jobAnuncis" />
+		<property name="cronExpression" value="0 0 12 * * ?" />
+ 
+	</bean>
+	 <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref local="onstartup" />
+                <ref local="cronTrigger" />                
+            </list>
+        </property>
+    </bean>
+</beans>

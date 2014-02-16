@@ -33,6 +33,9 @@
    <bean id="anuncisDao" class="com.alexmany.appStore.dao.impl.AnuncisDaoImpl" >
    		<property name="sessionFactory" ref="sessionFactory"></property>
    </bean>
+    <bean id="registerDao" class="com.alexmany.appStore.dao.impl.RegistresDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
    
 	<bean id="appStore.customPropertiesFactory"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -68,7 +71,6 @@
     <bean id="onstartup" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail" ref="job" />
 		<property name="startDelay" value="10000" />
-		<!-- repeat every 50 seconds -->
 		<property name="repeatInterval" value="50000" />
 		<property name="repeatCount" value="0" />
 	</bean>
