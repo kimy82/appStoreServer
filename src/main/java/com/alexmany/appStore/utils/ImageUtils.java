@@ -72,29 +72,21 @@ public class ImageUtils {
 	 */
 	public static BufferedImage resizeImage(BufferedImage image, int type,
 			int maxWidth, int maxHeight) {
-		Dimension largestDimension = new Dimension(maxWidth, maxHeight);
-
+		
+		BufferedImage dest = image;
+		
 		// Original size
 		int imageWidth = image.getWidth(null);
 		int imageHeight = image.getHeight(null);
-
-		float aspectRatio = (float) imageWidth / imageHeight;
-
-		if (imageWidth > maxWidth || imageHeight > maxHeight) {
-			if ((float) largestDimension.width / largestDimension.height > aspectRatio) {
-				largestDimension.width = (int) Math
-						.ceil(largestDimension.height * aspectRatio);
-			} else {
-				largestDimension.height = (int) Math
-						.ceil(largestDimension.width / aspectRatio);
-			}
-
-			imageWidth = largestDimension.width;
-			imageHeight = largestDimension.height;
+		
+		if(imageWidth>imageHeight){
+			dest =image.getSubimage(0, 0, imageHeight,imageHeight);
+		}else{
+			dest = image.getSubimage(0, 0, imageWidth,imageWidth);
 		}
 
-		return createHeadlessSmoothBufferedImage(image, type, imageWidth,
-				imageHeight);
+		return createHeadlessSmoothBufferedImage(dest, type, maxWidth,
+				maxHeight);
 	}
 
 	/**

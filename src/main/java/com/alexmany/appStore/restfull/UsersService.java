@@ -209,7 +209,7 @@ public class UsersService {
 			user = this.usersDao.load(new Long(idUser));
 		}
 		
-		if(idAnunciFromClient.equals("null")){
+		if(idAnunciFromClient.equals("null") || idAnunciFromClient.equals("")|| idAnunciFromClient.equals("undefined")){
 			
 			anunci = new Anuncis("titol","descripcio","preu");
 			anunci.setUser(user);
@@ -226,7 +226,7 @@ public class UsersService {
 			InputStream imageInputStream = part.getBody(InputStream.class, null);
 			BufferedImage bufferedImage =ImageIO.read(imageInputStream);
 			
-			bufferedImage = ImageUtils.resizeImage(bufferedImage, ImageUtils.IMAGE_JPEG , 100, 100);
+			bufferedImage = ImageUtils.resizeImage(bufferedImage, ImageUtils.IMAGE_JPEG , 400, 400);
 			String name ="img_"+idAnunciFromClient+"_"+idUser+"_"+anunci.getImagesAnunci().size();
 			ImageUtils.saveImage(bufferedImage, name, ImageUtils.IMAGE_JPEG);
 			ImageAnunci imageAnunci = new ImageAnunci(name);

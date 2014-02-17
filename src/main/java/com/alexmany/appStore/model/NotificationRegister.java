@@ -14,7 +14,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "REGISTERS")
+@Table(name = "REGISTER")
 public class NotificationRegister {
 
 	private Long id;
@@ -38,7 +38,7 @@ public class NotificationRegister {
 		this.id = id;
 	}
 	
-	@Column(name = "REGISTER_ID", unique = true, nullable = false, length = 345)
+	@Column(name = "REGISTER_ID", unique = true, nullable = false, length = 255)
 	public String getRegisterId() {
 		return registerId;
 	}
