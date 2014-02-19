@@ -213,6 +213,8 @@ public class UsersService {
 			
 			anunci = new Anuncis("titol","descripcio","preu");
 			anunci.setUser(user);
+			anunci.setDataCreacio(new Date());
+			anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
 			Long idAnunci =this.anuncisDao.save(anunci);	
 			if(idAnunci==null)
 				throw new Exception();
