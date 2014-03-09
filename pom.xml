@@ -214,14 +214,19 @@
 			<artifactId>servlet-api-2.5</artifactId>
 			<version>6.1.14</version>
 		</dependency>
-
-
-
 	</dependencies>
 
 	<build>
 		<finalName>AppStore</finalName>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.0.1</version>
+				<configuration>
+					<outputDirectory>C:\apache-tomcat-7.0.47\webapps</outputDirectory>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
@@ -252,7 +257,6 @@
 					</connectors>
 					<stopPort>9966</stopPort>
 					<stopKey>foo</stopKey>
-
 				</configuration>
 			</plugin>
 		</plugins>
