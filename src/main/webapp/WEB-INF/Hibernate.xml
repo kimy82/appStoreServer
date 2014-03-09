@@ -22,11 +22,11 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 		<property name="annotatedClasses">
 			<list>
-				<value>com.alexmany.appStore.model.Users</value>
-				<value>com.alexmany.appStore.model.UserRole</value>
-				<value>com.alexmany.appStore.model.Anuncis</value>	
-				<value>com.alexmany.appStore.model.ImageAnunci</value>
-				<value>com.alexmany.appStore.model.NotificationRegister</value>
+				<value>com.alexmany.secondstore.model.Users</value>
+				<value>com.alexmany.secondstore.model.UserRole</value>
+				<value>com.alexmany.secondstore.model.Anuncis</value>	
+				<value>com.alexmany.secondstore.model.ImageAnunci</value>
+				<value>com.alexmany.secondstore.model.NotificationRegister</value>
 			</list>
     	</property>
 

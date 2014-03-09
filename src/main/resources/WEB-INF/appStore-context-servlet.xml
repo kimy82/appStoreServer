@@ -8,7 +8,7 @@
 	<import resource="DataSource.xml" />
 	<import resource="Hibernate.xml" />
 
-	<bean id="registerDao" class="com.alexmany.appStore.dao.impl.RegistresDaoImpl">
+	<bean id="registerDao" class="com.alexmany.secondstore.dao.impl.RegistresDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
 

@@ -5,8 +5,8 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-	<display-name>AppStore</display-name>
-	<description>AppStore</description>
+	<display-name>secondstore</display-name>
+	<description>secondstore</description>
 	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
@@ -45,7 +45,7 @@
 	
 	<listener>
 		<listener-class>
-			com.alexmany.appStore.notifications.ApiKeyInitializer
+			com.alexmany.secondstore.notifications.ApiKeyInitializer
 		</listener-class>
 	</listener>
 	
@@ -57,7 +57,7 @@
 	<servlet>
 		<servlet-name>RegisterServlet</servlet-name>
 		<servlet-class>
-			com.alexmany.appStore.notifications.RegisterServlet
+			com.alexmany.secondstore.notifications.RegisterServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -65,7 +65,7 @@
 	<servlet>
 		<servlet-name>UnregisterServlet</servlet-name>
 		<servlet-class>
-			com.alexmany.appStore.notifications.UnregisterServlet
+			com.alexmany.secondstore.notifications.UnregisterServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -73,7 +73,7 @@
 	<servlet>
 		<servlet-name>SendAllMessagesServlet</servlet-name>
 		<servlet-class>
-			com.alexmany.appStore.notifications.SendAllMessagesServlet
+			com.alexmany.secondstore.notifications.SendAllMessagesServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -81,7 +81,7 @@
 	<servlet>
 		<servlet-name>HomeServlet</servlet-name>
 		<servlet-class>
-			com.alexmany.appStore.notifications.HomeServlet
+			com.alexmany.secondstore.notifications.HomeServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
