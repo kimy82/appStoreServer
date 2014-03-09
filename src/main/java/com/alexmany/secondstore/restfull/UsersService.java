@@ -23,7 +23,6 @@ package com.alexmany.secondstore.restfull;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +46,7 @@ import org.hibernate.HibernateException;
 
 import com.alexmany.secondstore.dao.AnuncisDao;
 import com.alexmany.secondstore.dao.UsersDao;
+import com.alexmany.secondstore.exceptions.RestException;
 import com.alexmany.secondstore.model.Anuncis;
 import com.alexmany.secondstore.model.ImageAnunci;
 import com.alexmany.secondstore.model.UserRole;
@@ -65,13 +65,30 @@ public class UsersService {
 
 	UsersDao usersDao;
 	AnuncisDao anuncisDao;
-	
-	//public final String server="www.alexmanydev.com";
-	public final String server="localhost:8080";
-	//public final String pathToImages="/var/www/vhosts/alexmanydev.com/appservers/apache-tomcat-7x/webapps/AppStore/images/";
-	public final String pathToImages="C:\\apache-tomcat-7.0.47\\webapps\\AppStore\\images\\";
-	
 
+	// public final String server="www.alexmanydev.com";
+	public final String server = "localhost:8080";
+	// public final String
+	// pathToImages="/var/www/vhosts/alexmanydev.com/appservers/apache-tomcat-7x/webapps/AppStore/images/";
+	public final String pathToImages = "C:\\apache-tomcat-7.0.47\\webapps\\AppStore\\images\\";
+	
+	/*
+	 * KEYS FOR RETRIEVING INFO OF REST
+	 */
+	public final static String USERNAME_KEY = "user";
+	public final static String USERID_KEY = "iduser";
+	public final static String EMAIL_KEY = "email";
+	public final static String LATITUD_KEY = "lat";
+	public final static String LONGITUD_KEY = "lon";
+	public final static String PASSWORD_KEY = "pass";
+	public final static String DESCRIPCIO_KEY = "descripcio";
+	public final static String TITOL_KEY = "titol";
+	public final static String CITY_KEY = "city";
+	public final static String PREU_KEY = "preu";
+	public final static String IDANUNCI_KEY = "idAnunci";
+	public final static String INIT_LIST_KEY = "init";
+	public final static String DISTANCE_KEY = "distance";
+	
 
 	@GET
 	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
@@ -81,18 +98,23 @@ public class UsersService {
 
 		try {
 
-			String email = uriInfo.getQueryParameters().get("email").get(0);
+			String email =  Utils.getInfoFromUriInfo(uriInfo, EMAIL_KEY, String.class);
 
 			Users userFound = this.usersDao.findByUserEmail(email);
 			if (userFound == null) {
-				return "{\"ok\":\"ko\"}";
+				throw new RestException("delete :: USER NOT FOUND we can not delete it");
 			}
 
 			this.usersDao.delete(userFound);
 
 			return "{\"ok\":\"ok\"}";
 
+		} catch (RestException e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
+
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
 		}
 	}
@@ -105,30 +127,31 @@ public class UsersService {
 
 		try {
 
-			String userName = uriInfo.getQueryParameters().get("user").get(0);
-			String email = uriInfo.getQueryParameters().get("email").get(0);
-			String password = uriInfo.getQueryParameters().get("pass").get(0);
-			String longitud = uriInfo.getQueryParameters().get("lon").get(0);
-			String latitud = uriInfo.getQueryParameters().get("lat").get(0);
+			String userName = Utils.getInfoFromUriInfo(uriInfo, USERNAME_KEY, String.class);
+			String email = Utils.getInfoFromUriInfo(uriInfo, EMAIL_KEY, String.class);
+			String password = Utils.getInfoFromUriInfo(uriInfo, PASSWORD_KEY, String.class);
+			Float longitud = Utils.getInfoFromUriInfo(uriInfo, LONGITUD_KEY, Float.class);
+			Float latitud = Utils.getInfoFromUriInfo(uriInfo, LATITUD_KEY, Float.class);
 
 			Users userFound = this.usersDao.findByUserEmail(email);
-			
-			//Vol dir que ve del facebook
-			if (userFound != null){
-				if(password.equals("facebook"))
-					return "{\"ok\":\"ok\",\"id\":\""+userFound.getId()+"\"}";
+
+			// Vol dir que ve del facebook
+			if (userFound != null) {
+				if (password.equals("facebook"))
+					return "{\"ok\":\"ok\",\"id\":\"" + userFound.getId()
+							+ "\"}";
 				else
-					throw new Exception();
+					throw new RestException("insert :: USER FOUND not coming from facebook");
 			}
-			
+
 			Users user = new Users();
 			user.setPassword(password);
 			user.setUsername(userName);
 			user.setEmail(email);
-			try{
-				user.setLatitud(new Float(latitud));
-				user.setLongitud(new Float(longitud));
-			}catch(NumberFormatException e){
+			try {
+				user.setLatitud(latitud);
+				user.setLongitud(longitud);
+			} catch (NumberFormatException e) {
 				user.setLatitud(null);
 				user.setLongitud(null);
 			}
@@ -139,8 +162,11 @@ public class UsersService {
 			user.setUserRole(userRole);
 			Long id = this.usersDao.save(user);
 
-			return "{\"ok\":\"ok\",\"id\":\""+id+"\"}";
-
+			return "{\"ok\":\"ok\",\"id\":\"" + id + "\"}";
+			
+		} catch (RestException e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
@@ -156,38 +182,42 @@ public class UsersService {
 		try {
 
 			String json = "";
-			String email = uriInfo.getQueryParameters().get("email").get(0);
-			String password = uriInfo.getQueryParameters().get("pass").get(0);
+			
+			String email = Utils.getInfoFromUriInfo(uriInfo, EMAIL_KEY, String.class);
+			String password =  Utils.getInfoFromUriInfo(uriInfo, PASSWORD_KEY, String.class);
+			
 			if (email == null || email.equals("") || password == null
 					|| password.equals("") || email.equals("null")
 					|| password.equals("null")) {
-				return "{\"ok\":\"ko\"}";
+				throw new RestException("login ::Compulsory fields for login are null or empty");
 			}
 
 			Users user = this.usersDao.findByUserEmail(email);
 
 			if (user == null) {
-				return "{\"ok\":\"ko\"}";
+				throw new RestException("login :: User does not exist");
 			} else {
 
 				if (!user.getPassword().equals(Utils.createSHA(password))) {
-					return "{\"ok\":\"ko\"}";
+					throw new RestException("login :: User password does not match");
 				}
 				String role = user.getUserRole() == null ? "ROLE_CLIENT" : user
 						.getUserRole().getRole();
 
 				json = "{\"ok\":\"ok\",\"username\":\"" + user.getUsername()
-						+ "\",\"role\":\"" + role + "\",\"id\":\""+user.getId()+"\"}";
+						+ "\",\"role\":\"" + role + "\",\"id\":\""
+						+ user.getId() + "\"}";
 			}
 
 			return json;
+		
+		}catch(RestException re){
+			re.printStackTrace();
+			return "{\"ok\":\"ko\"}";
 		} catch (HibernateException e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return "{\"ok\":\"ko\"}";
-		} catch (Exception e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
 		}
@@ -199,62 +229,75 @@ public class UsersService {
 	@Path("/uploadFoto")
 	public String uploadFoto(InMultiPart inMP, @Context UriInfo uriInfo)
 			throws IOException {
+		
 		Users user = null;
 		Anuncis anunci = null;
+		
 		try {
 
-			String idAnunciFromClient = uriInfo.getQueryParameters().get("idAnunci").get(0);
-			String idUser = uriInfo.getQueryParameters().get("idUser").get(0);
+			Long idAnunciFromClient = Utils.getInfoFromUriInfo(uriInfo, IDANUNCI_KEY, Long.class);
+			Long idUser = Utils.getInfoFromUriInfo(uriInfo, USERID_KEY, Long.class);
 
-		if(idUser.equals("null") || idUser.equals("") || idUser.equals("undefined")){
-			throw new Exception();
-		}else{
-			user = this.usersDao.load(new Long(idUser));
-		}
-		
-		if(idAnunciFromClient.equals("null") || idAnunciFromClient.equals("")|| idAnunciFromClient.equals("undefined")){
-			List<Anuncis> anuncisList = this.anuncisDao.searchBy("update",user.getId());
-			if(anuncisList!=null && !anuncisList.isEmpty()){
-				Anuncis anunciToBeUpdated = anuncisList.get(0);
-				idAnunciFromClient = String.valueOf(anunciToBeUpdated.getId());
-				System.out.println("upload foto recored anunci.....");
-			}else{
-				anunci = new Anuncis("update","update","update");
-				anunci.setUser(user);
-				anunci.setDataCreacio(new Date());
-				anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
-				Long idAnunci =this.anuncisDao.save(anunci);	
-				if(idAnunci==null)
-					throw new Exception();
-				idAnunciFromClient = String.valueOf(idAnunci);
-				System.out.println("upload foto new anunci.....");
+			if (idUser==null) {
+				throw new RestException("uploadFoto :: ID user is null: It is not possible to Upload a foto");
+			} else {
+				user = this.usersDao.load(idUser);
 			}
-		
-		}
-		anunci = this.anuncisDao.load(new Long(idAnunciFromClient));
-		
-		while (inMP.hasNext()) {
-			ImageUtils.path=pathToImages;
-			InPart part = inMP.next();
-			InputStream imageInputStream = part.getBody(InputStream.class, null);
-			BufferedImage bufferedImage =ImageIO.read(imageInputStream);
+
+			if (idAnunciFromClient== null) {
+				List<Anuncis> anuncisList = this.anuncisDao.searchBy("update",
+						user.getId());
+				if (anuncisList != null && !anuncisList.isEmpty()) {
+					Anuncis anunciToBeUpdated = anuncisList.get(0);
+					idAnunciFromClient = anunciToBeUpdated
+							.getId();
+					System.out.println("upload foto recored anunci.....");
+				} else {
+					anunci = new Anuncis("update", "update", "update");
+					anunci.setUser(user);
+					anunci.setDataCreacio(new Date());
+					anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
+					Long idAnunci = this.anuncisDao.save(anunci);
+					if (idAnunci == null)
+						throw new RestException("uploadFoto :: ID of anunci is NULL");
+					idAnunciFromClient =idAnunci;
+					System.out.println("upload foto new anunci.....");
+				}
+
+			}
+			anunci = this.anuncisDao.load(new Long(idAnunciFromClient));
+
+			while (inMP.hasNext()) {
+				ImageUtils.path = pathToImages;
+				InPart part = inMP.next();
+				InputStream imageInputStream = part.getBody(InputStream.class,
+						null);
+				BufferedImage bufferedImage = ImageIO.read(imageInputStream);
+
+				bufferedImage = ImageUtils.resizeImage(bufferedImage,
+						ImageUtils.IMAGE_JPEG, 400, 400);
+				String name = "img_" + idAnunciFromClient + "_" + idUser + "_"
+						+ anunci.getImagesAnunci().size();
+				ImageUtils
+						.saveImage(bufferedImage, name, ImageUtils.IMAGE_JPEG);
+				ImageAnunci imageAnunci = new ImageAnunci(name);
+				imageAnunci.setAnunci(anunci);
+				anunci.getImagesAnunci().add(imageAnunci);
+				this.anuncisDao.update(anunci);
+
+			}
+			System.out.println("upload foto return......................"
+					+ idAnunciFromClient);
+			return "{\"ok\":\"ok\",\"id\":\"" + idAnunciFromClient + "\"}";
 			
-			bufferedImage = ImageUtils.resizeImage(bufferedImage, ImageUtils.IMAGE_JPEG , 400, 400);
-			String name ="img_"+idAnunciFromClient+"_"+idUser+"_"+anunci.getImagesAnunci().size();
-			ImageUtils.saveImage(bufferedImage, name, ImageUtils.IMAGE_JPEG);
-			ImageAnunci imageAnunci = new ImageAnunci(name);
-			imageAnunci.setAnunci(anunci);
-			anunci.getImagesAnunci().add(imageAnunci);
-			this.anuncisDao.update(anunci);
-		
-		}
-		System.out.println("upload foto return......................"+idAnunciFromClient);
-		return "{\"ok\":\"ok\",\"id\":\""+idAnunciFromClient+"\"}";
-		}catch(Exception e){
+		} catch (RestException e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
+		} catch (Exception e) {
 			return "{\"ok\":\"ko\"}";
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param linkProcessor
@@ -268,99 +311,92 @@ public class UsersService {
 			@Context UriInfo uriInfo) {
 
 		try {
-			
-			String descripcio = uriInfo.getQueryParameters().get("descripcio").get(0);
-			String titol = uriInfo.getQueryParameters().get("titol").get(0);
-			String preu = uriInfo.getQueryParameters().get("preu").get(0);
-			String idAnunci = uriInfo.getQueryParameters().get("idAnunci").get(0);
-			String longitud = uriInfo.getQueryParameters().get("lon").get(0);
-			String latitud = uriInfo.getQueryParameters().get("lat").get(0);
-			String iduser = uriInfo.getQueryParameters().get("iduser").get(0);
-			String city = uriInfo.getQueryParameters().get("city").get(0);
-			
+
+			String descripcio = Utils.getInfoFromUriInfo(uriInfo, DESCRIPCIO_KEY, String.class);
+			String titol = Utils.getInfoFromUriInfo(uriInfo, TITOL_KEY, String.class);
+			String preu =  Utils.getInfoFromUriInfo(uriInfo, PREU_KEY, String.class);
+			Long idAnunci =  Utils.getInfoFromUriInfo(uriInfo, IDANUNCI_KEY, Long.class);
+			Float longitud = Utils.getInfoFromUriInfo(uriInfo, LONGITUD_KEY, Float.class);
+			Float latitud =  Utils.getInfoFromUriInfo(uriInfo, LATITUD_KEY, Float.class);
+			Long iduser =  Utils.getInfoFromUriInfo(uriInfo, USERID_KEY, Long.class);
+			String city =  Utils.getInfoFromUriInfo(uriInfo, CITY_KEY, String.class);
+
 			Users user = this.usersDao.load(new Long(iduser));
-			
+
 			if (descripcio == null || descripcio.equals("") || titol == null
-					|| titol.equals("") || preu ==null ||preu.equals("null")) {
-				return "{\"ok\":\"ko\"}";
+					|| titol.equals("") || preu == null || preu.equals("null")) {
+				throw new RestException("saveAnunci ::Descripcio, titol or Preu are null");
 			}
+
+			List<Anuncis> anuncisList = this.anuncisDao.searchBy("update",user.getId());
 			
-			Anuncis anunci = new Anuncis(titol,descripcio,preu);
-			if(idAnunci.equals("null") || idAnunci == null || idAnunci.equals("undefined")){
-				Anuncis anunciToBeUpdated = null;
-				List<Anuncis> anuncisList = this.anuncisDao.searchBy("update",user.getId());
-				if(anuncisList!=null && !anuncisList.isEmpty()){
-					System.out.println("save anunci recored anunci.....");
-					anunciToBeUpdated = anuncisList.get(0);
-					anunci.setId(anunciToBeUpdated.getId());
+			if (idAnunci==null) {
+					Anuncis anunci = new Anuncis(titol, descripcio, preu);
+					if(anuncisList !=null && !anuncisList.isEmpty()){
+						//netejem possibles anuncis erronis
+						for(Anuncis anuncitodelete : anuncisList){
+							this.anuncisDao.delete(anuncitodelete);
+						}
+					}
+					
+				
 					anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
 					anunci.setDataCreacio(new Date());
 					anunci.setUser(user);
-					
-					if(longitud==null ||longitud.equals("undefined") || longitud.equals("")){
+
+					if (longitud == null ) {
 						anunci.setLongitud(user.getLongitud());
-					}else{
-						anunci.setLongitud(new Float(longitud));
+					} else {
+						anunci.setLongitud(longitud);
 					}
-					
-					if(latitud==null ||latitud.equals("undefined") || latitud.equals("")){
+
+					if (latitud == null ) {
 						anunci.setLatitud(user.getLatitud());
-					}else{
+					} else {
 						anunci.setLatitud(user.getLatitud());
 					}
 					anunci.setCity(city);
-					this.anuncisDao.update(anunci);
-					idAnunci = String.valueOf(anunci.getId());
-				}else{
-					System.out.println("save anunci new anunci.....");
-					anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
-					anunci.setDataCreacio(new Date());
-					anunci.setUser(user);
-					if(longitud==null ||longitud.equals("undefined") || longitud.equals("")){
-						anunci.setLongitud(user.getLongitud());
-					}else{
-						anunci.setLongitud(new Float(longitud));
-					}
-					
-					if(latitud==null ||latitud.equals("undefined") || latitud.equals("")){
-						anunci.setLatitud(user.getLatitud());
-					}else{
-						anunci.setLatitud(user.getLatitud());
-					}
-					anunci.setCity(city);
-					Long idAnunciLong = this.anuncisDao.save(anunci);
-					idAnunci = String.valueOf(idAnunciLong);
-				}
-			}else{
+					this.anuncisDao.save(anunci);
+					idAnunci = anunci.getId();
+				
+			} else {
+				Anuncis anunci = this.anuncisDao.load(idAnunci);
 				System.out.println("save anunci id from app.....");
 				anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
 				anunci.setDataCreacio(new Date());
 				anunci.setUser(user);
 				anunci.setCity(city);
-				if(longitud==null ||longitud.equals("undefined") || longitud.equals("")){
+				if (longitud == null) {
 					anunci.setLongitud(user.getLongitud());
-				}else{
-					anunci.setLongitud(new Float(longitud));
+				} else {
+					anunci.setLongitud(longitud);
 				}
-				
-				if(latitud==null ||latitud.equals("undefined") || latitud.equals("")){
+
+				if (latitud == null) {
 					anunci.setLatitud(user.getLatitud());
-				}else{
+				} else {
 					anunci.setLatitud(user.getLatitud());
-				}				
+				}
 				anunci.setId(new Long(idAnunci));
 				this.anuncisDao.update(anunci);
 			}
-			return "{\"ok\":\"ok\",\"id\":\""+idAnunci+"\"}";
+			return "{\"ok\":\"ok\",\"id\":\"" + idAnunci + "\"}";
+		
+		} catch (RestException e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
 		} catch (HibernateException e) {
 			e.printStackTrace();
-			return "{\"ok\":\"ko\"}";		
+			return "{\"ok\":\"ko\"}";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
 		}
+		
+		
+		
 	}
-	
+
 	/**
 	 * 
 	 * @param linkProcessor
@@ -372,92 +408,126 @@ public class UsersService {
 	@Path("/getAnuncis")
 	public String getAnuncis(@Context LinkBuilders linkProcessor,
 			@Context UriInfo uriInfo) {
-		
+
 		List<AnuncisTOSearch> anuncisTOList = new ArrayList<AnuncisTOSearch>();
-		String init = uriInfo.getQueryParameters().get("init").get(0);
-		String lat = uriInfo.getQueryParameters().get("lat").get(0);
-		String lon = uriInfo.getQueryParameters().get("lon").get(0);
 		
+		String init = Utils.getInfoFromUriInfo(uriInfo, INIT_LIST_KEY, String.class);
+		Double lat = Utils.getInfoFromUriInfo(uriInfo, LATITUD_KEY, Double.class);
+		Double lon = Utils.getInfoFromUriInfo(uriInfo, LONGITUD_KEY, Double.class);
+
 		try {
-			
-			List<Anuncis> anuncisList = this.anuncisDao.getAll(Integer.parseInt(init));
-			
-			for(Anuncis anunci : anuncisList){
-				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio(), anunci.getCity());
-				
-				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciToSearch.setName("http://"+server+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+
+			List<Anuncis> anuncisList = this.anuncisDao.getAll(Integer
+					.parseInt(init));
+
+			for (Anuncis anunci : anuncisList) {
+				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(
+						anunci.getId(), anunci.getPreu(), anunci.getEstat(),
+						0.0, anunci.getTitol(), "", anunci.getDescripcio(),
+						anunci.getCity());
+
+				if (anunci.getImagesAnunci() != null
+						&& !anunci.getImagesAnunci().isEmpty()) {
+					anunciToSearch.setName("http://" + server
+							+ "/AppStore/images/"
+							+ anunci.getImagesAnunci().get(0).getName()
+							+ ".jpg");
 				}
-				
-				if(lat ==null || lat.equals("") || lon == null || lon.equals("")|| lon.equals("undefined")|| lat.equals("undefined") ||anunci.getLatitud()==null || anunci.getLongitud()==null){
+
+				if (lat == null || lon == null					
+						|| anunci.getLatitud() == null
+						|| anunci.getLongitud() == null) {
 					anunciToSearch.setDistance(0.0);
-				}else{
-					anunciToSearch.setDistance(6371*Math.acos(Math.cos(Math.toRadians(Double.parseDouble(lat)))*
-							Math.cos(Math.toRadians(anunci.getLatitud()))*Math.cos(Math.toRadians(anunci.getLongitud())-Math.toRadians(Double.parseDouble(lon)))+Math.sin(Math.toRadians(Double.parseDouble(lat)))*Math.sin(Math.toRadians(anunci.getLatitud()))));
-					
+				} else {
+					anunciToSearch.setDistance(6371 * Math.acos(Math.cos(Math
+							.toRadians(lat))
+							* Math.cos(Math.toRadians(anunci.getLatitud()))
+							* Math.cos(Math.toRadians(anunci.getLongitud())
+									- Math.toRadians(lon))
+							+ Math.sin(Math.toRadians(lat))
+							* Math.sin(Math.toRadians(anunci.getLatitud()))));
+
 				}
 				anuncisTOList.add(anunciToSearch);
 			}
-			
-			 Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
-			 String json= gson.toJson(anuncisTOList);
-			 return json;
-			
+
+			Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls()
+					.excludeFieldsWithoutExposeAnnotation().create();
+			String json = gson.toJson(anuncisTOList);
+			return json;
+
 		} catch (HibernateException e) {
 			e.printStackTrace();
-			return "{\"ok\":\"ko\"}";		
+			return "{\"ok\":\"ko\"}";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param linkProcessor
 	 * @param uriInfo
-	 * @return json of anuncis within specific coords. {anunci[path(url imatge),preu,titol]}
+	 * @return json of anuncis within specific coords. {anunci[path(url
+	 *         imatge),preu,titol]}
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
 	@Path("/searchAnuncis")
 	public String searchAnuncis(@Context LinkBuilders linkProcessor,
 			@Context UriInfo uriInfo) {
-		
+
 		List<AnuncisTOSearch> anuncisTOList = new ArrayList<AnuncisTOSearch>();
-		String lon = uriInfo.getQueryParameters().get("lon").get(0);
-		String lat = uriInfo.getQueryParameters().get("lat").get(0);
-		String distance = uriInfo.getQueryParameters().get("distance").get(0);
-		String init = uriInfo.getQueryParameters().get("init").get(0);
+		Float lon = Utils.getInfoFromUriInfo(uriInfo, LONGITUD_KEY, Float.class);
+		Float lat = Utils.getInfoFromUriInfo(uriInfo, LATITUD_KEY, Float.class);
+		Integer distance = Utils.getInfoFromUriInfo(uriInfo, DISTANCE_KEY, Integer.class);
+		Integer init =  Utils.getInfoFromUriInfo(uriInfo, INIT_LIST_KEY, Integer.class);
+		
 		try {
-			
-			List<Anuncis> anuncisList = this.anuncisDao.search(Integer.parseInt(init),Integer.parseInt(distance),new Float(lat),new Float(lon));
-			
-			for(Anuncis anunci : anuncisList){
-				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio(), anunci.getCity());
-				
-				if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-					anunciToSearch.setName("http://"+server+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+
+			List<Anuncis> anuncisList = this.anuncisDao.search(
+					init, distance,
+					lat, lon);
+
+			for (Anuncis anunci : anuncisList) {
+				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(
+						anunci.getId(), anunci.getPreu(), anunci.getEstat(),
+						0.0, anunci.getTitol(), "", anunci.getDescripcio(),
+						anunci.getCity());
+
+				if (anunci.getImagesAnunci() != null
+						&& !anunci.getImagesAnunci().isEmpty()) {
+					anunciToSearch.setName("http://" + server
+							+ "/AppStore/images/"
+							+ anunci.getImagesAnunci().get(0).getName()
+							+ ".jpg");
 				}
-			
-				anunciToSearch.setDistance(6371*Math.acos(Math.cos(Math.toRadians(56.467056))*
-						Math.cos(Math.toRadians(anunci.getLatitud()))*Math.cos(Math.toRadians(anunci.getLongitud())-Math.toRadians(-2.976094))+Math.sin(Math.toRadians(56.467056))*Math.sin(Math.toRadians(anunci.getLatitud()))));
+
+				anunciToSearch.setDistance(6371 * Math.acos(Math.cos(Math
+						.toRadians(56.467056))
+						* Math.cos(Math.toRadians(anunci.getLatitud()))
+						* Math.cos(Math.toRadians(anunci.getLongitud())
+								- Math.toRadians(-2.976094))
+						+ Math.sin(Math.toRadians(56.467056))
+						* Math.sin(Math.toRadians(anunci.getLatitud()))));
 				anuncisTOList.add(anunciToSearch);
 			}
-			
-			 Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
-			 String json= gson.toJson(anuncisTOList);
-			 return json;
-			
+
+			Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls()
+					.excludeFieldsWithoutExposeAnnotation().create();
+			String json = gson.toJson(anuncisTOList);
+			return json;
+
 		} catch (HibernateException e) {
 			e.printStackTrace();
-			return "{\"ok\":\"ko\"}";		
+			return "{\"ok\":\"ko\"}";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param linkProcessor
@@ -469,41 +539,48 @@ public class UsersService {
 	@Path("/getInfoAnunci")
 	public String getInfoAnunci(@Context LinkBuilders linkProcessor,
 			@Context UriInfo uriInfo) {
-		
+
 		AnuncisTO anuncisTO = null;
-		String idAnunci = uriInfo.getQueryParameters().get("id").get(0);
-		
+		Long idAnunci =  Utils.getInfoFromUriInfo(uriInfo, IDANUNCI_KEY, Long.class);
+
 		try {
-			
-			if(idAnunci==null || idAnunci.equals("")){
-				return "{\"ok\":\"ko\"}";
+
+			if (idAnunci == null ) {
+				throw new RestException("getInfoAnunci :: id of ANUNCI is NULL or Empty");
 			}
-			
-			Anuncis anunci = this.anuncisDao.load(Long.parseLong(idAnunci));
-			
-			anuncisTO = new AnuncisTO(anunci.getLatitud(),anunci.getLongitud(),anunci.getId(), anunci.getPreu(), anunci.getEstat(), 0.0, anunci.getTitol(), "",anunci.getDescripcio(), anunci.getCity());
-				
+
+			Anuncis anunci = this.anuncisDao.load(idAnunci);
+
+			anuncisTO = new AnuncisTO(anunci.getLatitud(),
+					anunci.getLongitud(), anunci.getId(), anunci.getPreu(),
+					anunci.getEstat(), 0.0, anunci.getTitol(), "",
+					anunci.getDescripcio(), anunci.getCity());
+
 			List<String> images = new ArrayList<String>();
-			if(anunci.getImagesAnunci()!=null && !anunci.getImagesAnunci().isEmpty()){
-				images.add("http://"+server+"/AppStore/images/"+anunci.getImagesAnunci().get(0).getName()+".jpg");
+			if (anunci.getImagesAnunci() != null
+					&& !anunci.getImagesAnunci().isEmpty()) {
+				images.add("http://" + server + "/AppStore/images/"
+						+ anunci.getImagesAnunci().get(0).getName() + ".jpg");
 			}
 			anuncisTO.setImages(images);
 			anuncisTO.setDistance(0.0);
 
-			 Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
-			 String json= gson.toJson(anuncisTO);
-			 return json;
+			Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls()
+					.excludeFieldsWithoutExposeAnnotation().create();
+			String json = gson.toJson(anuncisTO);
+			return json;
 			
+		}catch(RestException re){
+			re.printStackTrace();
+			return "{\"ok\":\"ko\"}";
 		} catch (HibernateException e) {
 			e.printStackTrace();
-			return "{\"ok\":\"ko\"}";		
+			return "{\"ok\":\"ko\"}";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "{\"ok\":\"ko\"}";
 		}
 	}
-
-	
 
 	public void setUsersDao(UsersDao usersDao) {
 		this.usersDao = usersDao;
