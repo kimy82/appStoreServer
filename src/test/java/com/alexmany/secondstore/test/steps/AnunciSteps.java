@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import com.alexmany.secondstore.dao.AnuncisDao;
 import com.alexmany.secondstore.dao.UsersDao;
 import com.alexmany.secondstore.model.Anuncis;
+import com.alexmany.secondstore.model.ImageAnunci;
 import com.alexmany.secondstore.model.Users;
 import com.alexmany.secondstore.restfull.UsersService;
 import com.google.gson.Gson;
@@ -76,9 +77,9 @@ public class AnunciSteps {
 
 		this.responseString = srv.saveAnunci(link, uriInfo);
 
-		Mockito.verify(uriInfo, Mockito.times(7)).getQueryParameters();
+		Mockito.verify(uriInfo, Mockito.times(10)).getQueryParameters();
 		Mockito.verify(this.anunciDaoMock, Mockito.times(1)).save(Mockito.any(Anuncis.class));
-		Mockito.verify(this.anunciDaoMock, Mockito.times(1)).update(Mockito.any(Anuncis.class));
+		Mockito.verify(this.anunciDaoMock, Mockito.times(2)).update(Mockito.any(Anuncis.class));
 
 	}
 	
@@ -155,9 +156,9 @@ public class AnunciSteps {
 		List<String> lons = new ArrayList<String>();
 		lons.add("123.90");
 		
-		Mockito.when(multi.get("init")).thenReturn(init);
-		Mockito.when(multi.get("lat")).thenReturn(lats);
-		Mockito.when(multi.get("lon")).thenReturn(lons);
+		Mockito.when(multi.get(UsersService.INIT_LIST_KEY)).thenReturn(init);
+		Mockito.when(multi.get(UsersService.LATITUD_KEY)).thenReturn(lats);
+		Mockito.when(multi.get(UsersService.LONGITUD_KEY)).thenReturn(lons);
 		
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);		
@@ -217,11 +218,20 @@ public class AnunciSteps {
 		idAnuncis.add("null");
 		List<String> idAnuncisSegon = new ArrayList<String>();
 		idAnuncisSegon.add("1");
-		Mockito.when(multi.get("titol")).thenReturn(titols);
-		Mockito.when(multi.get("descripcio")).thenReturn(descripcio);
-		Mockito.when(multi.get("preu")).thenReturn(preus);
-		Mockito.when(multi.get("idUser")).thenReturn(idUsers);
-		Mockito.when(multi.get("idAnunci")).thenReturn(idAnuncis).thenReturn(idAnuncisSegon);
+		List<String> lons = new ArrayList<String>();
+		lons.add("123.98");
+		List<String> lans = new ArrayList<String>();
+		lans.add("123.98");
+		List<String> cities = new ArrayList<String>();
+		cities.add("city");
+		Mockito.when(multi.get(UsersService.TITOL_KEY)).thenReturn(titols);
+		Mockito.when(multi.get(UsersService.DESCRIPCIO_KEY)).thenReturn(descripcio);
+		Mockito.when(multi.get(UsersService.PREU_KEY)).thenReturn(preus);
+		Mockito.when(multi.get(UsersService.USERID_KEY)).thenReturn(idUsers);
+		Mockito.when(multi.get(UsersService.LONGITUD_KEY)).thenReturn(lons);
+		Mockito.when(multi.get(UsersService.LATITUD_KEY)).thenReturn(lans);
+		Mockito.when(multi.get(UsersService.CITY_KEY)).thenReturn(cities);
+		Mockito.when(multi.get(UsersService.IDANUNCI_KEY)).thenReturn(idAnuncis).thenReturn(idAnuncisSegon);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);
 
@@ -240,6 +250,7 @@ public class AnunciSteps {
 		Mockito.when(anunciDaoMock.save(Mockito.any(Anuncis.class))).thenReturn(new Long("1"));
 		Anuncis anunci = new Anuncis("titol","descripco","preu");
 		anunci.setId(new Long("1"));
+		
 		Mockito.doReturn(anunci).when(anunciDaoMock).load(new Long("1"));
 		
 		this.userDaoMock = Mockito.mock(UsersDao.class);		
@@ -277,14 +288,14 @@ public class AnunciSteps {
 		cities.add("Barcelona");
 		List<String> idAnuncisSegon = new ArrayList<String>();
 		idAnuncisSegon.add("1");
-		Mockito.when(multi.get("titol")).thenReturn(titols);
-		Mockito.when(multi.get("descripcio")).thenReturn(descripcio);
-		Mockito.when(multi.get("preu")).thenReturn(preus);
-		Mockito.when(multi.get("iduser")).thenReturn(idUsers);
-		Mockito.when(multi.get("lon")).thenReturn(lons);
-		Mockito.when(multi.get("lat")).thenReturn(lans);
-		Mockito.when(multi.get("city")).thenReturn(cities);
-		Mockito.when(multi.get("idAnunci")).thenReturn(idAnuncis).thenReturn(idAnuncisSegon);
+		Mockito.when(multi.get(UsersService.TITOL_KEY)).thenReturn(titols);
+		Mockito.when(multi.get(UsersService.DESCRIPCIO_KEY)).thenReturn(descripcio);
+		Mockito.when(multi.get(UsersService.PREU_KEY)).thenReturn(preus);
+		Mockito.when(multi.get(UsersService.USERID_KEY)).thenReturn(idUsers);
+		Mockito.when(multi.get(UsersService.LONGITUD_KEY)).thenReturn(lons);
+		Mockito.when(multi.get(UsersService.LATITUD_KEY)).thenReturn(lans);
+		Mockito.when(multi.get(UsersService.CITY_KEY)).thenReturn(cities);
+		Mockito.when(multi.get(UsersService.IDANUNCI_KEY)).thenReturn(idAnuncis);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);
 

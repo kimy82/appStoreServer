@@ -35,6 +35,7 @@ public class UserServiceSteps {
 	private LinkBuilders link;
 	private UsersDao userDaoMock;
 	private Users userFound;
+	private String password;
 
 	@Given("I delete a $email")
 	public void testSentRest(@Named("email") String email) {
@@ -71,11 +72,12 @@ public class UserServiceSteps {
 	}
 	
 	
-	@Given("I insert a $user with $email")
-	public void testInsertRest(@Named("user") String user,@Named("email") String email) {
+	@Given("I insert a $user with $email and $pass")
+	public void testInsertRest(@Named("user") String user,@Named("email") String email,@Named("pass") String pass) {
 
 		this.userName = user;
 		this.email =email;
+		this.password = pass;
 
 		prepareServiceScenario2();
 
@@ -172,20 +174,21 @@ public class UserServiceSteps {
 		users.add(userName);
 		users.add(userName);
 		List<String> passwords = new ArrayList<String>();
-		passwords.add("password");
+		passwords.add(this.password);
 		List<String> longituds = new ArrayList<String>();		
 		longituds.add("3.454545");
 		List<String> latituds = new ArrayList<String>();		
 		latituds.add("3.454545");
 		
+		
 		List<String> emails = new ArrayList<String>();		
 		emails.add(this.email);
 		
-		Mockito.when(multi.get("user")).thenReturn(users);
-		Mockito.when(multi.get("pass")).thenReturn(passwords);
-		Mockito.when(multi.get("lon")).thenReturn(longituds);
-		Mockito.when(multi.get("lat")).thenReturn(latituds);
-		Mockito.when(multi.get("email")).thenReturn(emails);
+		Mockito.when(multi.get(UsersService.USERNAME_KEY)).thenReturn(users);
+		Mockito.when(multi.get(UsersService.PASSWORD_KEY)).thenReturn(passwords);
+		Mockito.when(multi.get(UsersService.LONGITUD_KEY)).thenReturn(longituds);
+		Mockito.when(multi.get(UsersService.LATITUD_KEY)).thenReturn(latituds);
+		Mockito.when(multi.get(UsersService.EMAIL_KEY)).thenReturn(emails);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);
 
