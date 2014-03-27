@@ -21,9 +21,9 @@ import org.mockito.Mockito;
 import com.alexmany.secondstore.dao.AnuncisDao;
 import com.alexmany.secondstore.dao.UsersDao;
 import com.alexmany.secondstore.model.Anuncis;
-import com.alexmany.secondstore.model.ImageAnunci;
 import com.alexmany.secondstore.model.Users;
 import com.alexmany.secondstore.restfull.UsersService;
+import com.alexmany.secondstore.utils.Constants;
 import com.google.gson.Gson;
 
 /**
@@ -35,12 +35,10 @@ public class AnunciSteps {
 
 	private String responseString;
 	private UsersService srv;
-	private String userName;
 	private UriInfo uriInfo;
 	private LinkBuilders link;
 	private UsersDao userDaoMock;
 	private AnuncisDao anunciDaoMock;
-	private Users userFound;
 	private Integer numberOfAnuncis;
 	private Integer init;
 
@@ -140,6 +138,7 @@ public class AnunciSteps {
 		srv.setAnuncisDao(this.anunciDaoMock);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Then("I get $y anuncis")
 	public void testRecieveAnmuncis(@Named("y") String y) throws Exception {
 		
@@ -156,9 +155,9 @@ public class AnunciSteps {
 		List<String> lons = new ArrayList<String>();
 		lons.add("123.90");
 		
-		Mockito.when(multi.get(UsersService.INIT_LIST_KEY)).thenReturn(init);
-		Mockito.when(multi.get(UsersService.LATITUD_KEY)).thenReturn(lats);
-		Mockito.when(multi.get(UsersService.LONGITUD_KEY)).thenReturn(lons);
+		Mockito.when(multi.get(Constants.INIT_LIST_KEY)).thenReturn(init);
+		Mockito.when(multi.get(Constants.LATITUD_KEY)).thenReturn(lats);
+		Mockito.when(multi.get(Constants.LONGITUD_KEY)).thenReturn(lons);
 		
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);		
@@ -224,14 +223,14 @@ public class AnunciSteps {
 		lans.add("123.98");
 		List<String> cities = new ArrayList<String>();
 		cities.add("city");
-		Mockito.when(multi.get(UsersService.TITOL_KEY)).thenReturn(titols);
-		Mockito.when(multi.get(UsersService.DESCRIPCIO_KEY)).thenReturn(descripcio);
-		Mockito.when(multi.get(UsersService.PREU_KEY)).thenReturn(preus);
-		Mockito.when(multi.get(UsersService.USERID_KEY)).thenReturn(idUsers);
-		Mockito.when(multi.get(UsersService.LONGITUD_KEY)).thenReturn(lons);
-		Mockito.when(multi.get(UsersService.LATITUD_KEY)).thenReturn(lans);
-		Mockito.when(multi.get(UsersService.CITY_KEY)).thenReturn(cities);
-		Mockito.when(multi.get(UsersService.IDANUNCI_KEY)).thenReturn(idAnuncis).thenReturn(idAnuncisSegon);
+		Mockito.when(multi.get(Constants.TITOL_KEY)).thenReturn(titols);
+		Mockito.when(multi.get(Constants.DESCRIPCIO_KEY)).thenReturn(descripcio);
+		Mockito.when(multi.get(Constants.PREU_KEY)).thenReturn(preus);
+		Mockito.when(multi.get(Constants.USERID_KEY)).thenReturn(idUsers);
+		Mockito.when(multi.get(Constants.LONGITUD_KEY)).thenReturn(lons);
+		Mockito.when(multi.get(Constants.LATITUD_KEY)).thenReturn(lans);
+		Mockito.when(multi.get(Constants.CITY_KEY)).thenReturn(cities);
+		Mockito.when(multi.get(Constants.IDANUNCI_KEY)).thenReturn(idAnuncis).thenReturn(idAnuncisSegon);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);
 
@@ -288,14 +287,14 @@ public class AnunciSteps {
 		cities.add("Barcelona");
 		List<String> idAnuncisSegon = new ArrayList<String>();
 		idAnuncisSegon.add("1");
-		Mockito.when(multi.get(UsersService.TITOL_KEY)).thenReturn(titols);
-		Mockito.when(multi.get(UsersService.DESCRIPCIO_KEY)).thenReturn(descripcio);
-		Mockito.when(multi.get(UsersService.PREU_KEY)).thenReturn(preus);
-		Mockito.when(multi.get(UsersService.USERID_KEY)).thenReturn(idUsers);
-		Mockito.when(multi.get(UsersService.LONGITUD_KEY)).thenReturn(lons);
-		Mockito.when(multi.get(UsersService.LATITUD_KEY)).thenReturn(lans);
-		Mockito.when(multi.get(UsersService.CITY_KEY)).thenReturn(cities);
-		Mockito.when(multi.get(UsersService.IDANUNCI_KEY)).thenReturn(idAnuncis);
+		Mockito.when(multi.get(Constants.TITOL_KEY)).thenReturn(titols);
+		Mockito.when(multi.get(Constants.DESCRIPCIO_KEY)).thenReturn(descripcio);
+		Mockito.when(multi.get(Constants.PREU_KEY)).thenReturn(preus);
+		Mockito.when(multi.get(Constants.USERID_KEY)).thenReturn(idUsers);
+		Mockito.when(multi.get(Constants.LONGITUD_KEY)).thenReturn(lons);
+		Mockito.when(multi.get(Constants.LATITUD_KEY)).thenReturn(lans);
+		Mockito.when(multi.get(Constants.CITY_KEY)).thenReturn(cities);
+		Mockito.when(multi.get(Constants.IDANUNCI_KEY)).thenReturn(idAnuncis);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);
 

@@ -19,6 +19,7 @@ import com.alexmany.secondstore.dao.UsersDao;
 import com.alexmany.secondstore.model.UserRole;
 import com.alexmany.secondstore.model.Users;
 import com.alexmany.secondstore.restfull.UsersService;
+import com.alexmany.secondstore.utils.Constants;
 
 /**
  * 
@@ -184,11 +185,11 @@ public class UserServiceSteps {
 		List<String> emails = new ArrayList<String>();		
 		emails.add(this.email);
 		
-		Mockito.when(multi.get(UsersService.USERNAME_KEY)).thenReturn(users);
-		Mockito.when(multi.get(UsersService.PASSWORD_KEY)).thenReturn(passwords);
-		Mockito.when(multi.get(UsersService.LONGITUD_KEY)).thenReturn(longituds);
-		Mockito.when(multi.get(UsersService.LATITUD_KEY)).thenReturn(latituds);
-		Mockito.when(multi.get(UsersService.EMAIL_KEY)).thenReturn(emails);
+		Mockito.when(multi.get(Constants.USERNAME_KEY)).thenReturn(users);
+		Mockito.when(multi.get(Constants.PASSWORD_KEY)).thenReturn(passwords);
+		Mockito.when(multi.get(Constants.LONGITUD_KEY)).thenReturn(longituds);
+		Mockito.when(multi.get(Constants.LATITUD_KEY)).thenReturn(latituds);
+		Mockito.when(multi.get(Constants.EMAIL_KEY)).thenReturn(emails);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(multi);
 		link = Mockito.mock(LinkBuilders.class);
 

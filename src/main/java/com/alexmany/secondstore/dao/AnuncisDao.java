@@ -23,4 +23,6 @@ public interface AnuncisDao {
 	
 	List<Anuncis> searchBy(String titol,Long userId);
 	
+	List<Anuncis> searchBy(Long userId);
+	
 }

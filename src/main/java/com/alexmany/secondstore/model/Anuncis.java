@@ -50,6 +50,8 @@ public class Anuncis implements Serializable {
 	private Float latitud;
 	
 	private Float longitud;
+	
+	private boolean sold;
 
 	
 	private List<ImageAnunci> imagesAnunci = new ArrayList<ImageAnunci>();
@@ -61,6 +63,7 @@ public class Anuncis implements Serializable {
 		this.titol = titol;
 		this.descripcio = descripcio;
 		this.preu = preu;
+		this.sold = false;
 	}
 	
 	
@@ -141,7 +144,7 @@ public class Anuncis implements Serializable {
 	}
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "anunci")
-	@Cascade({CascadeType.SAVE_UPDATE})
+	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.DELETE_ORPHAN})
 	public List<ImageAnunci> getImagesAnunci() {
 		return imagesAnunci;
 	}
@@ -182,10 +185,17 @@ public class Anuncis implements Serializable {
 		return city;
 	}
 
-
-
 	public void setCity(String city) {
 		this.city = city;
+	}
+	
+	@Column(name = "SOLD", unique = false, nullable = false)
+	public boolean isSold() {
+		return sold;
+	}
+
+	public void setSold(boolean sold) {
+		this.sold = sold;
 	}
 
 

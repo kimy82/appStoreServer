@@ -1,10 +1,17 @@
 package com.alexmany.secondstore.crons;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import com.alexmany.secondstore.dao.ChatsDao;
 import com.alexmany.secondstore.dao.UsersDao;
+import com.alexmany.secondstore.model.Chats;
+import com.alexmany.secondstore.model.Comments;
 import com.alexmany.secondstore.model.UserRole;
 import com.alexmany.secondstore.model.Users;
 
@@ -15,6 +22,9 @@ public class WorkOutPunctuation implements Job {
 		System.out.println("Hello Quartz! Creem inserts BBDD");
 		UsersDao usersDao = (UsersDao) context.getJobDetail().getJobDataMap()
 				.get("usersDao");
+		
+		ChatsDao chatsDao = (ChatsDao) context.getJobDetail().getJobDataMap()
+				.get("chatsDao");
 
 		String entorn = (String) context.getJobDetail().getJobDataMap()
 				.get("entorn");
@@ -68,8 +78,32 @@ public class WorkOutPunctuation implements Job {
 				userAl2menu.setUserRole(roleC);
 				usersDao.save(userAl2menu);
 				
-
-			}
+				//INsert chats for testing app
+				List<Users> usersTOchat = new ArrayList<Users>();
+				usersTOchat.add(userAl1menu);
+				usersTOchat.add(userAl2menu);
+				
+				List<Comments> comments = new ArrayList<Comments>();
+				Comments comment1 = new Comments();
+				Comments comment2 = new Comments();
+				Comments comment3 = new Comments();
+				Chats chat = new Chats();
+				comment1.setChat(chat);
+				comment2.setChat(chat);
+				comment3.setChat(chat);
+				comment1.setComment("Hola estic interesat amb el surf");
+				comment2.setComment("Doncs hi ha un lloc que es diu newquay");
+				comment3.setComment("Uau alla vaig");
+				comment1.setDate(new Date());
+				comment2.setDate(new Date());
+				comment3.setDate(new Date());
+				comments.add(comment1);
+				comments.add(comment2);
+				comments.add(comment3);
+				chat.setComments(comments);
+				chat.setUsers(usersTOchat);
+				chatsDao.save(chat);
+				}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

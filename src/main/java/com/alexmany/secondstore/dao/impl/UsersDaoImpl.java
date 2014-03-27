@@ -1,13 +1,17 @@
 package com.alexmany.secondstore.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alexmany.secondstore.dao.UsersDao;
 import com.alexmany.secondstore.exceptions.DAOException;
+import com.alexmany.secondstore.model.Anuncis;
 import com.alexmany.secondstore.model.UserRole;
 import com.alexmany.secondstore.model.Users;
 
@@ -41,12 +45,10 @@ public class UsersDaoImpl extends HibernateDaoSupport implements UsersDao{
 		Session session = this.getSessionFactory().openSession();
 		session.beginTransaction();
 		Users userToDelete = (Users) session.load(Users.class, user.getId());
-		//session.delete(userToDelete.getUserRole());
 		session.delete(userToDelete);
 		session.getTransaction().commit();
 		session.close();
 
-		// getHibernateTemplate().delete(user);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,9 +71,6 @@ public class UsersDaoImpl extends HibernateDaoSupport implements UsersDao{
 		return userFound;
 	}
 
-
-	
-	
 	public Users load( Long id ){
 		@SuppressWarnings("unchecked")
 		List<Users> userFounds = (List<Users>) getHibernateTemplate().find("from Users u where u.id = ?",id);
@@ -80,6 +79,54 @@ public class UsersDaoImpl extends HibernateDaoSupport implements UsersDao{
 		Users userFound = userFounds.get(0);
 		return userFound;
 		// getHibernateTemplate().load(Users.class,id);
+	}
+	
+	public Users loadWtihChats( Long id ){
+		
+		
+		Session session = this.getSessionFactory().openSession();
+		session.beginTransaction();
+		Users user = (Users) session.load(Users.class, id);
+		Hibernate.initialize(user.getChats());
+		session.getTransaction().commit();
+		session.close();
+		return user;
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param id of user
+	 * @return number of products return 0 if id is null
+	 */
+	public int getNumProducts( Long id ){
+		if (id == null)
+			return 0;
+		
+		Session session = this.getSessionFactory().openSession();
+		session.beginTransaction();
+		int numProducts = session.createCriteria(Anuncis.class).createAlias("user", "user").add(Restrictions.eq("user.id",id)).list().size();
+		session.close();		
+		
+		return numProducts;
+	}
+	
+	/**
+	 * 
+	 * @param id of user
+	 * @return number of products solds return 0 if id is null
+	 */
+	public int getNumProductsSold( Long id ){
+		if (id == null)
+			return 0;
+		
+		Session session = this.getSessionFactory().openSession();
+		session.beginTransaction();
+		int numProducts = session.createCriteria(Anuncis.class).createAlias("user", "user").add(Restrictions.eq("user.id",id)).add(Restrictions.eq("sold", true)).list().size();
+		session.close();
+		
+		return numProducts;
 	}
 	
 	@Transactional

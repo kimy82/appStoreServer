@@ -9,6 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -47,6 +50,8 @@ public class Users implements Serializable {
 	private List<Anuncis>	anuncis;
 	
 	private String deviceId;
+	
+	private List<Chats> chats;
 
 
 	// CONSTRUCTORS
@@ -152,6 +157,16 @@ public class Users implements Serializable {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+	
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+	@Cascade(value = {CascadeType.ALL} )
+	public List<Chats> getChats() {
+		return chats;
+	}
+
+	public void setChats(List<Chats> chats) {
+		this.chats = chats;
 	}
 
 	@Override

@@ -26,4 +26,10 @@ public interface UsersDao {
 	
 	Users findByUserEmail( String email );
 	
+	int getNumProductsSold( Long id );
+	
+	int getNumProducts( Long id );
+	
+	Users loadWtihChats( Long id );
+	
 }

@@ -55,6 +55,7 @@ import com.alexmany.secondstore.pojos.AnuncisTO;
 import com.alexmany.secondstore.pojos.AnuncisTOSearch;
 import com.alexmany.secondstore.utils.Constants;
 import com.alexmany.secondstore.utils.ImageUtils;
+import com.alexmany.secondstore.utils.UserUtils;
 import com.alexmany.secondstore.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -65,29 +66,6 @@ public class UsersService {
 
 	UsersDao usersDao;
 	AnuncisDao anuncisDao;
-
-	// public final String server="www.alexmanydev.com";
-	public final String server = "localhost:8080";
-	// public final String
-	// pathToImages="/var/www/vhosts/alexmanydev.com/appservers/apache-tomcat-7x/webapps/AppStore/images/";
-	public final String pathToImages = "C:\\apache-tomcat-7.0.47\\webapps\\AppStore\\images\\";
-	
-	/*
-	 * KEYS FOR RETRIEVING INFO OF REST
-	 */
-	public final static String USERNAME_KEY = "user";
-	public final static String USERID_KEY = "iduser";
-	public final static String EMAIL_KEY = "email";
-	public final static String LATITUD_KEY = "lat";
-	public final static String LONGITUD_KEY = "lon";
-	public final static String PASSWORD_KEY = "pass";
-	public final static String DESCRIPCIO_KEY = "descripcio";
-	public final static String TITOL_KEY = "titol";
-	public final static String CITY_KEY = "city";
-	public final static String PREU_KEY = "preu";
-	public final static String IDANUNCI_KEY = "idAnunci";
-	public final static String INIT_LIST_KEY = "init";
-	public final static String DISTANCE_KEY = "distance";
 	
 
 	@GET
@@ -98,7 +76,7 @@ public class UsersService {
 
 		try {
 
-			String email =  Utils.getInfoFromUriInfo(uriInfo, EMAIL_KEY, String.class);
+			String email =  Utils.getInfoFromUriInfo(uriInfo, Constants.EMAIL_KEY, String.class);
 
 			Users userFound = this.usersDao.findByUserEmail(email);
 			if (userFound == null) {
@@ -127,11 +105,11 @@ public class UsersService {
 
 		try {
 
-			String userName = Utils.getInfoFromUriInfo(uriInfo, USERNAME_KEY, String.class);
-			String email = Utils.getInfoFromUriInfo(uriInfo, EMAIL_KEY, String.class);
-			String password = Utils.getInfoFromUriInfo(uriInfo, PASSWORD_KEY, String.class);
-			Float longitud = Utils.getInfoFromUriInfo(uriInfo, LONGITUD_KEY, Float.class);
-			Float latitud = Utils.getInfoFromUriInfo(uriInfo, LATITUD_KEY, Float.class);
+			String userName = Utils.getInfoFromUriInfo(uriInfo, Constants.USERNAME_KEY, String.class);
+			String email = Utils.getInfoFromUriInfo(uriInfo, Constants.EMAIL_KEY, String.class);
+			String password = Utils.getInfoFromUriInfo(uriInfo, Constants.PASSWORD_KEY, String.class);
+			Float longitud = Utils.getInfoFromUriInfo(uriInfo, Constants.LONGITUD_KEY, Float.class);
+			Float latitud = Utils.getInfoFromUriInfo(uriInfo,Constants.LATITUD_KEY, Float.class);
 
 			Users userFound = this.usersDao.findByUserEmail(email);
 
@@ -183,8 +161,8 @@ public class UsersService {
 
 			String json = "";
 			
-			String email = Utils.getInfoFromUriInfo(uriInfo, EMAIL_KEY, String.class);
-			String password =  Utils.getInfoFromUriInfo(uriInfo, PASSWORD_KEY, String.class);
+			String email = Utils.getInfoFromUriInfo(uriInfo, Constants.EMAIL_KEY, String.class);
+			String password =  Utils.getInfoFromUriInfo(uriInfo, Constants.PASSWORD_KEY, String.class);
 			
 			if (email == null || email.equals("") || password == null
 					|| password.equals("") || email.equals("null")
@@ -235,8 +213,8 @@ public class UsersService {
 		
 		try {
 
-			Long idAnunciFromClient = Utils.getInfoFromUriInfo(uriInfo, IDANUNCI_KEY, Long.class);
-			Long idUser = Utils.getInfoFromUriInfo(uriInfo, USERID_KEY, Long.class);
+			Long idAnunciFromClient = Utils.getInfoFromUriInfo(uriInfo, Constants.IDANUNCI_KEY, Long.class);
+			Long idUser = Utils.getInfoFromUriInfo(uriInfo, Constants.USERID_KEY, Long.class);
 
 			if (idUser==null) {
 				throw new RestException("uploadFoto :: ID user is null: It is not possible to Upload a foto");
@@ -268,7 +246,7 @@ public class UsersService {
 			anunci = this.anuncisDao.load(new Long(idAnunciFromClient));
 
 			while (inMP.hasNext()) {
-				ImageUtils.path = pathToImages;
+				ImageUtils.path = Constants.pathToImages;
 				InPart part = inMP.next();
 				InputStream imageInputStream = part.getBody(InputStream.class,
 						null);
@@ -312,14 +290,14 @@ public class UsersService {
 
 		try {
 
-			String descripcio = Utils.getInfoFromUriInfo(uriInfo, DESCRIPCIO_KEY, String.class);
-			String titol = Utils.getInfoFromUriInfo(uriInfo, TITOL_KEY, String.class);
-			String preu =  Utils.getInfoFromUriInfo(uriInfo, PREU_KEY, String.class);
-			Long idAnunci =  Utils.getInfoFromUriInfo(uriInfo, IDANUNCI_KEY, Long.class);
-			Float longitud = Utils.getInfoFromUriInfo(uriInfo, LONGITUD_KEY, Float.class);
-			Float latitud =  Utils.getInfoFromUriInfo(uriInfo, LATITUD_KEY, Float.class);
-			Long iduser =  Utils.getInfoFromUriInfo(uriInfo, USERID_KEY, Long.class);
-			String city =  Utils.getInfoFromUriInfo(uriInfo, CITY_KEY, String.class);
+			String descripcio = Utils.getInfoFromUriInfo(uriInfo, Constants.DESCRIPCIO_KEY, String.class);
+			String titol = Utils.getInfoFromUriInfo(uriInfo, Constants.TITOL_KEY, String.class);
+			String preu =  Utils.getInfoFromUriInfo(uriInfo, Constants.PREU_KEY, String.class);
+			Long idAnunci =  Utils.getInfoFromUriInfo(uriInfo, Constants.IDANUNCI_KEY, Long.class);
+			Float longitud = Utils.getInfoFromUriInfo(uriInfo, Constants.LONGITUD_KEY, Float.class);
+			Float latitud =  Utils.getInfoFromUriInfo(uriInfo, Constants.LATITUD_KEY, Float.class);
+			Long iduser =  Utils.getInfoFromUriInfo(uriInfo, Constants.USERID_KEY, Long.class);
+			String city =  Utils.getInfoFromUriInfo(uriInfo, Constants.CITY_KEY, String.class);
 
 			Users user = this.usersDao.load(new Long(iduser));
 
@@ -364,6 +342,9 @@ public class UsersService {
 				System.out.println("save anunci id from app.....");
 				anunci.setEstat(Constants.ESTAT_ANUNCI_NEW);
 				anunci.setDataCreacio(new Date());
+				anunci.setDescripcio(descripcio);
+				anunci.setTitol(titol);
+				anunci.setPreu(preu);
 				anunci.setUser(user);
 				anunci.setCity(city);
 				if (longitud == null) {
@@ -371,13 +352,11 @@ public class UsersService {
 				} else {
 					anunci.setLongitud(longitud);
 				}
-
 				if (latitud == null) {
 					anunci.setLatitud(user.getLatitud());
 				} else {
 					anunci.setLatitud(user.getLatitud());
 				}
-				anunci.setId(new Long(idAnunci));
 				this.anuncisDao.update(anunci);
 			}
 			return "{\"ok\":\"ok\",\"id\":\"" + idAnunci + "\"}";
@@ -411,9 +390,10 @@ public class UsersService {
 
 		List<AnuncisTOSearch> anuncisTOList = new ArrayList<AnuncisTOSearch>();
 		
-		String init = Utils.getInfoFromUriInfo(uriInfo, INIT_LIST_KEY, String.class);
-		Double lat = Utils.getInfoFromUriInfo(uriInfo, LATITUD_KEY, Double.class);
-		Double lon = Utils.getInfoFromUriInfo(uriInfo, LONGITUD_KEY, Double.class);
+		String init = Utils.getInfoFromUriInfo(uriInfo, Constants.INIT_LIST_KEY, String.class);
+		Double lat = Utils.getInfoFromUriInfo(uriInfo, Constants.LATITUD_KEY, Double.class);
+		Double lon = Utils.getInfoFromUriInfo(uriInfo, Constants.LONGITUD_KEY, Double.class);
+
 
 		try {
 
@@ -426,14 +406,8 @@ public class UsersService {
 						0.0, anunci.getTitol(), "", anunci.getDescripcio(),
 						anunci.getCity());
 
-				if (anunci.getImagesAnunci() != null
-						&& !anunci.getImagesAnunci().isEmpty()) {
-					anunciToSearch.setName("http://" + server
-							+ "/AppStore/images/"
-							+ anunci.getImagesAnunci().get(0).getName()
-							+ ".jpg");
-				}
-
+				anunciToSearch = UserUtils.setImagePath(anunci, anunciToSearch, Constants.server);
+				
 				if (lat == null || lon == null					
 						|| anunci.getLatitud() == null
 						|| anunci.getLongitud() == null) {
@@ -448,6 +422,51 @@ public class UsersService {
 							* Math.sin(Math.toRadians(anunci.getLatitud()))));
 
 				}
+				anuncisTOList.add(anunciToSearch);
+			}
+
+			Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls()
+					.excludeFieldsWithoutExposeAnnotation().create();
+			String json = gson.toJson(anuncisTOList);
+			return json;
+
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "{\"ok\":\"ko\"}";
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * @param linkProcessor
+	 * @param uriInfo
+	 * @return json of anuncis. {anunci[path(url imatge),preu,titol]}
+	 */
+	@GET
+	@Produces({ MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_JSON })
+	@Path("/getListUserAnuncis")
+	public String getListUserAnuncis(@Context LinkBuilders linkProcessor,
+			@Context UriInfo uriInfo) {
+
+		List<AnuncisTOSearch> anuncisTOList = new ArrayList<AnuncisTOSearch>();
+		Long userId = Utils.getInfoFromUriInfo(uriInfo, Constants.USERID_KEY, Long.class);
+		
+		try {
+
+			List<Anuncis> anuncisList = this.anuncisDao.searchBy(userId);
+
+			for (Anuncis anunci : anuncisList) {
+				AnuncisTOSearch anunciToSearch = new AnuncisTOSearch(
+						anunci.getId(), anunci.getPreu(), anunci.getEstat(),
+						0.0, anunci.getTitol(), "", anunci.getDescripcio(),
+						anunci.getCity());
+
+				anunciToSearch = UserUtils.setImagePath(anunci, anunciToSearch, Constants.server);
+
 				anuncisTOList.add(anunciToSearch);
 			}
 
@@ -479,10 +498,10 @@ public class UsersService {
 			@Context UriInfo uriInfo) {
 
 		List<AnuncisTOSearch> anuncisTOList = new ArrayList<AnuncisTOSearch>();
-		Float lon = Utils.getInfoFromUriInfo(uriInfo, LONGITUD_KEY, Float.class);
-		Float lat = Utils.getInfoFromUriInfo(uriInfo, LATITUD_KEY, Float.class);
-		Integer distance = Utils.getInfoFromUriInfo(uriInfo, DISTANCE_KEY, Integer.class);
-		Integer init =  Utils.getInfoFromUriInfo(uriInfo, INIT_LIST_KEY, Integer.class);
+		Float lon = Utils.getInfoFromUriInfo(uriInfo, Constants.LONGITUD_KEY, Float.class);
+		Float lat = Utils.getInfoFromUriInfo(uriInfo, Constants.LATITUD_KEY, Float.class);
+		Integer distance = Utils.getInfoFromUriInfo(uriInfo, Constants.DISTANCE_KEY, Integer.class);
+		Integer init =  Utils.getInfoFromUriInfo(uriInfo, Constants.INIT_LIST_KEY, Integer.class);
 		
 		try {
 
@@ -498,7 +517,7 @@ public class UsersService {
 
 				if (anunci.getImagesAnunci() != null
 						&& !anunci.getImagesAnunci().isEmpty()) {
-					anunciToSearch.setName("http://" + server
+					anunciToSearch.setName("http://" + Constants.server
 							+ "/AppStore/images/"
 							+ anunci.getImagesAnunci().get(0).getName()
 							+ ".jpg");
@@ -541,7 +560,7 @@ public class UsersService {
 			@Context UriInfo uriInfo) {
 
 		AnuncisTO anuncisTO = null;
-		Long idAnunci =  Utils.getInfoFromUriInfo(uriInfo, IDANUNCI_KEY, Long.class);
+		Long idAnunci =  Utils.getInfoFromUriInfo(uriInfo, Constants.IDANUNCI_KEY, Long.class);
 
 		try {
 
@@ -550,19 +569,18 @@ public class UsersService {
 			}
 
 			Anuncis anunci = this.anuncisDao.load(idAnunci);
+			
 
 			anuncisTO = new AnuncisTO(anunci.getLatitud(),
 					anunci.getLongitud(), anunci.getId(), anunci.getPreu(),
 					anunci.getEstat(), 0.0, anunci.getTitol(), "",
-					anunci.getDescripcio(), anunci.getCity());
+					anunci.getDescripcio(), anunci.getCity(),anunci.getUser().getUsername(), 
+					this.usersDao.getNumProducts(anunci.getUser().getId()),
+					this.usersDao.getNumProductsSold(anunci.getUser().getId()),anunci.getUser().getId() );
 
-			List<String> images = new ArrayList<String>();
-			if (anunci.getImagesAnunci() != null
-					&& !anunci.getImagesAnunci().isEmpty()) {
-				images.add("http://" + server + "/AppStore/images/"
-						+ anunci.getImagesAnunci().get(0).getName() + ".jpg");
-			}
-			anuncisTO.setImages(images);
+		
+			anuncisTO = UserUtils.setImagePath(anunci, anuncisTO, Constants.server);
+			
 			anuncisTO.setDistance(0.0);
 
 			Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls()

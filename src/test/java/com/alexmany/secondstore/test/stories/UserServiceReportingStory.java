@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.alexmany.secondstore.test.steps.AnunciSteps;
+import com.alexmany.secondstore.test.steps.ChatSteps;
 import com.alexmany.secondstore.test.steps.UserServiceSteps;
 import com.thoughtworks.paranamer.NullParanamer;
 
@@ -47,6 +48,9 @@ public class UserServiceReportingStory extends JUnitStories {
 	
 	@Autowired
 	AnunciSteps anunciSteps;
+	
+	@Autowired
+	ChatSteps chatSteps;
 
 	@Override
 	protected List<String> storyPaths() {

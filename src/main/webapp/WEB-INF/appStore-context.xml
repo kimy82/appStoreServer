@@ -16,6 +16,7 @@
 		<property name="instances">
 			<set>
 				<ref local="secondstoreSrv" />
+				<ref local="secondstoreChat" />
 			</set>
 		</property>
 	</bean>
@@ -26,6 +27,11 @@
 	    <property name="usersDao" ref="usersDao"></property>
 	    <property name="anuncisDao" ref="anuncisDao"></property> 
 	</bean>
+	<bean id="secondstoreChat" class="com.alexmany.secondstore.restfull.ChatService" >
+	    <property name="usersDao" ref="usersDao"></property>
+	    <property name="anuncisDao" ref="anuncisDao"></property> 
+	     <property name="chatsDao" ref="chatsDao"></property>
+	</bean>
 	<!-- DAOS -->
 	<bean id="usersDao" class="com.alexmany.secondstore.dao.impl.UsersDaoImpl" >
    		<property name="sessionFactory" ref="sessionFactory"></property>
@@ -34,6 +40,9 @@
    		<property name="sessionFactory" ref="sessionFactory"></property>
    </bean>
     <bean id="registerDao" class="com.alexmany.secondstore.dao.impl.RegistresDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
+      <bean id="chatsDao" class="com.alexmany.secondstore.dao.impl.ChatsDaoImpl" >
    		<property name="sessionFactory" ref="sessionFactory"></property>
    </bean>
    
@@ -64,7 +73,8 @@
         <property name="jobDataAsMap">
             <map>
                  <entry key="entorn" value="local" />
-                 <entry key="usersDao" value-ref="usersDao" />                             
+                 <entry key="usersDao" value-ref="usersDao" />
+                 <entry key="chatsDao" value-ref="chatsDao" />
             </map>
         </property>
     </bean>

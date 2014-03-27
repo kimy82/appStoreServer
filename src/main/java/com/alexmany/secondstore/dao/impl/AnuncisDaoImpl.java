@@ -32,11 +32,17 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 
 	}
 
+	/**
+	 * @param anunci to update
+	 */
 	public void update(Anuncis anunci) {
 
 		getHibernateTemplate().update(anunci);
 	}
 
+	/**
+	 * @param anunci to delete
+	 */
 	public void delete(Anuncis anunci) {
 
 		Session session = this.getSessionFactory().openSession();
@@ -48,6 +54,11 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		session.close();
 	}
 
+	/**
+	 * @param id of anunci
+	 * @return Anunci return null if not exist
+	 * 
+	 */
 	public Anuncis load(Long id) {
 		@SuppressWarnings("unchecked")
 		List<Anuncis> anunciList = (List<Anuncis>) getHibernateTemplate().find(
@@ -58,6 +69,11 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		return anunciFound;
 	}
 
+	/**
+	 * @Param init first anunci in list
+	 * @return list of anuncis
+	 */
+	@SuppressWarnings("unchecked")
 	@Transactional
 	public List<Anuncis> getAll(int init) {
 
@@ -70,6 +86,10 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		return anuncis;
 	}
 	
+	/**
+	 * @return all anuncis
+	 */
+	@SuppressWarnings("unchecked")
 	@Transactional
 	public List<Anuncis> getAll() {
 
@@ -82,6 +102,13 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		return anuncis;
 	}
 	
+	/**
+	 * @param init first anunci in the list
+	 * @param distance max distance of anunci from lat and lot coordenades
+	 * @Param lon longitud
+	 * @param lat latitud
+	 */
+	@SuppressWarnings("unchecked")
 	public List<Anuncis> search(Integer init, Integer distance, Float lat, Float lon){
 		
 		List<Anuncis> anuncis = new ArrayList<Anuncis>();
@@ -95,6 +122,13 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		return anuncis;
 	}
 	
+	/**
+	 * Search anuncis
+	 * 
+	 * @param titol of anunci
+	 * @param userId
+	 */
+	@SuppressWarnings("unchecked")
 	public List<Anuncis> searchBy(String titol,Long userId){
 		
 		List<Anuncis> anuncis = new ArrayList<Anuncis>();
@@ -102,6 +136,24 @@ public class AnuncisDaoImpl extends HibernateDaoSupport implements AnuncisDao {
 		Session session = this.getSessionFactory().openSession();
 		session.beginTransaction();
 		anuncis = session.createCriteria(Anuncis.class).createAlias("user", "user").add(Restrictions.eq("titol",titol)).add(Restrictions.eq("user.id", userId)).list();
+		session.close();		
+		
+		return anuncis;
+	}
+	
+	/**
+	 * Search anuncis
+	 * 
+	 * @param userId
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Anuncis> searchBy(Long userId){
+		
+		List<Anuncis> anuncis = new ArrayList<Anuncis>();
+		
+		Session session = this.getSessionFactory().openSession();
+		session.beginTransaction();
+		anuncis = session.createCriteria(Anuncis.class).createAlias("user", "user").add(Restrictions.eq("user.id", userId)).list();
 		session.close();		
 		
 		return anuncis;
