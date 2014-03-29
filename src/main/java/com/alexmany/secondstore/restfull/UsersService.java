@@ -578,11 +578,11 @@ public class UsersService {
 					this.usersDao.getNumProducts(anunci.getUser().getId()),
 					this.usersDao.getNumProductsSold(anunci.getUser().getId()),anunci.getUser().getId() );
 
-		
+			
 			anuncisTO = UserUtils.setImagePath(anunci, anuncisTO, Constants.server);
 			
 			anuncisTO.setDistance(0.0);
-
+			anuncisTO.setUserId(anunci.getUser().getId());
 			Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls()
 					.excludeFieldsWithoutExposeAnnotation().create();
 			String json = gson.toJson(anuncisTO);

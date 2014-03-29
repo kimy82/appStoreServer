@@ -15,22 +15,38 @@
 		</property>
 		<property name="instances">
 			<set>
-				<ref local="appStoreSrv" />
+				<ref local="secondstoreSrv" />
+				<ref local="secondstoreChat" />
 			</set>
 		</property>
 	</bean>
 
 
 	<!-- Serveis rest -->	
-	<bean id="appStoreSrv" class="com.alexmany.appStore.restfull.UsersService" >
-	    <property name="usersDao" ref="usersDao"></property> 
+	<bean id="secondstoreSrv" class="com.alexmany.secondstore.restfull.UsersService" >
+	    <property name="usersDao" ref="usersDao"></property>
+	    <property name="anuncisDao" ref="anuncisDao"></property> 
+	</bean>
+	<bean id="secondstoreChat" class="com.alexmany.secondstore.restfull.ChatService" >
+	    <property name="usersDao" ref="usersDao"></property>
+	    <property name="anuncisDao" ref="anuncisDao"></property> 
+	     <property name="chatsDao" ref="chatsDao"></property>
 	</bean>
 	<!-- DAOS -->
-	<bean id="usersDao" class="com.alexmany.appStore.dao.impl.UsersDaoImpl" >
+	<bean id="usersDao" class="com.alexmany.secondstore.dao.impl.UsersDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
+   <bean id="anuncisDao" class="com.alexmany.secondstore.dao.impl.AnuncisDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
+    <bean id="registerDao" class="com.alexmany.secondstore.dao.impl.RegistresDaoImpl" >
+   		<property name="sessionFactory" ref="sessionFactory"></property>
+   </bean>
+      <bean id="chatsDao" class="com.alexmany.secondstore.dao.impl.ChatsDaoImpl" >
    		<property name="sessionFactory" ref="sessionFactory"></property>
    </bean>
    
-	<bean id="appStore.customPropertiesFactory"
+	<bean id="secondstore.customPropertiesFactory"
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="locations">
 			<list>
@@ -38,14 +54,14 @@
 			</list>
 		</property>
 	</bean>
-	<bean id="appStore.placeholderConfigurer"
+	<bean id="secondstore.placeholderConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
 		<property name="order" value="1" />
 		<property name="propertiesArray">
 			<list>
 				<props>
-					<prop key="winkPropertiesFactory">appStore.customPropertiesFactory
+					<prop key="winkPropertiesFactory">secondstore.customPropertiesFactory
 					</prop>
 				</props>
 			</list>
@@ -53,25 +69,42 @@
 	</bean>	
 	<!-- JOB PER CREAR INSERTS INICIALS A LA BBDD -->
 	<bean id="job" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <property name="jobClass" value="com.alexmany.appStore.crons.WorkOutPunctuation" />
+        <property name="jobClass" value="com.alexmany.secondstore.crons.WorkOutPunctuation" />
         <property name="jobDataAsMap">
             <map>
                  <entry key="entorn" value="local" />
-                 <entry key="usersDao" value-ref="usersDao" />                             
+                 <entry key="usersDao" value-ref="usersDao" />
+                 <entry key="chatsDao" value-ref="chatsDao" />
             </map>
         </property>
     </bean>
     <bean id="onstartup" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail" ref="job" />
 		<property name="startDelay" value="10000" />
-		<!-- repeat every 50 seconds -->
 		<property name="repeatInterval" value="50000" />
 		<property name="repeatCount" value="0" />
+	</bean>
+		<!-- JOB PER refreesh anuncis new/normal/vell-->
+	<bean id="jobAnuncis" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="com.alexmany.secondstore.crons.WorkOutAnuncis" />
+        <property name="jobDataAsMap">
+            <map>
+                 <entry key="anuncisDao" value-ref="anuncisDao" />                             
+            </map>
+        </property>
+    </bean>
+    <bean id="cronTrigger" 
+                class="org.springframework.scheduling.quartz.CronTriggerBean">
+ 
+		<property name="jobDetail" ref="jobAnuncis" />
+		<property name="cronExpression" value="0 0 12 * * ?" />
+ 
 	</bean>
 	 <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref local="onstartup" />                
+                <ref local="onstartup" />
+                <ref local="cronTrigger" />                
             </list>
         </property>
     </bean>

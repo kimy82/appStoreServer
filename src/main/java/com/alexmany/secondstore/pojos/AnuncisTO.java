@@ -38,6 +38,9 @@ public class AnuncisTO extends AnuncisTOSearch {
 	
 	@Expose
 	private Long			 userAnunciId;
+	
+	@Expose
+	private Long			 userId;
 
 
 	// CONSTRUCTORS
@@ -108,6 +111,14 @@ public class AnuncisTO extends AnuncisTOSearch {
 
 	public void setUserAnunciId(Long userAnunciId) {
 		this.userAnunciId = userAnunciId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 	
 	

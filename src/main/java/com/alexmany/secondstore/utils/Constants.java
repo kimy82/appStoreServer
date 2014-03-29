@@ -28,9 +28,9 @@ public class Constants {
 	public final static String USER_CHAT_2 = "userchattwo";
 	public final static String COMMENT = "comment";
 
-	// public final String server="www.alexmanydev.com";
-	public final static String server = "192.168.1.78:8080";
+	public final static String server="www.alexmanydev.com";
+	//public final static String server = "192.168.1.78:8080";
 	// public final String
-	// pathToImages="/var/www/vhosts/alexmanydev.com/appservers/apache-tomcat-7x/webapps/AppStore/images/";
-	public final static String pathToImages = "C:\\apache-tomcat-7.0.47\\webapps\\AppStore\\images\\";
+	public final static String pathToImages="/var/www/vhosts/alexmanydev.com/appservers/apache-tomcat-7x/webapps/AppStore/images/";
+	//public final static String pathToImages = "C:\\apache-tomcat-7.0.47\\webapps\\AppStore\\images\\";
 }

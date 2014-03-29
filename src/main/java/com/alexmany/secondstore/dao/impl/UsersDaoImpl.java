@@ -88,6 +88,9 @@ public class UsersDaoImpl extends HibernateDaoSupport implements UsersDao{
 		session.beginTransaction();
 		Users user = (Users) session.load(Users.class, id);
 		Hibernate.initialize(user.getChats());
+		for(int i=0; i<user.getChats().size(); i++){
+			Hibernate.initialize(user.getChats().get(i).getUsers());
+		}
 		session.getTransaction().commit();
 		session.close();
 		return user;
